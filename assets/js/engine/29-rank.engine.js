@@ -191,7 +191,7 @@
           updatedAt: Date.now()
         };
 
-        State.update('rank', metrics);
+        State.update('rank', () => metrics);
 
         this.saveRankHistory(newRank);
 
@@ -285,5 +285,6 @@
     current: () => RankEngine.getCurrentRank(),
     promote: () => RankEngine.forcePromote()
   };
+
 
 })();
