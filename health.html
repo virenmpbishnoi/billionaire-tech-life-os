@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="default">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Health – Adaptive Life OS"/>
+  <title>Health – Adaptive Life OS</title>
+
+  <!-- Favicon & Meta -->
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon"/>
+  <meta name="theme-color" content="#0f172a"/>
+
+  <!-- CSS Loading Order – Critical: Do NOT change -->
+  <link rel="stylesheet" href="assets/css/01-variables.css"/>
+  <link rel="stylesheet" href="assets/css/02-base.css"/>
+  <link rel="stylesheet" href="assets/css/03-layout.css"/>
+  <link rel="stylesheet" href="assets/css/04-components.css"/>
+  <link rel="stylesheet" href="assets/css/05-animations.css"/>
+  <link rel="stylesheet" href="assets/css/06-responsive.css"/>
+  <link rel="stylesheet" href="assets/css/07-themes.css"/>
+
+  <style>
+    /* Minimal inline critical CSS for fast paint */
+    body {
+      margin: 0;
+      font-family: var(--bt-font-family-primary);
+      background: var(--bt-color-bg-main);
+      color: var(--bt-color-text-primary);
+      min-height: 100vh;
+    }
+    .health-container {
+      max-width: var(--bt-container-max);
+      margin: 0 auto;
+      padding: var(--bt-space-xl);
+    }
+    .health-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--bt-space-2xl);
+    }
+    .health-controls {
+      display: flex;
+      gap: var(--bt-space-lg);
+      margin-bottom: var(--bt-space-xl);
+      flex-wrap: wrap;
+    }
+    .health-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--bt-space-lg);
+      margin-bottom: var(--bt-space-2xl);
+    }
+    .health-card {
+      background: var(--bt-color-bg-card);
+      border-radius: var(--bt-radius-lg);
+      padding: var(--bt-space-lg);
+      border: 1px solid var(--bt-color-border);
+      box-shadow: var(--bt-shadow-md);
+      text-align: center;
+    }
+    .health-card-value {
+      font-size: var(--bt-font-size-3xl);
+      font-weight: var(--bt-font-weight-bold);
+      margin: var(--bt-space-sm) 0;
+    }
+    .health-card-label {
+      color: var(--bt-color-text-secondary);
+    }
+    .health-tracking {
+      background: var(--bt-color-bg-card);
+      border-radius: var(--bt-radius-lg);
+      border: 1px solid var(--bt-color-border);
+      overflow: hidden;
+      margin-bottom: var(--bt-space-2xl);
+    }
+    .health-item {
+      padding: var(--bt-space-md) var(--bt-space-lg);
+      border-bottom: 1px solid var(--bt-color-border);
+      display: flex;
+      align-items: center;
+      gap: var(--bt-space-lg);
+    }
+    .health-item:last-child {
+      border-bottom: none;
+    }
+    .health-type {
+      font-weight: var(--bt-font-weight-semibold);
+      min-width: 100px;
+    }
+    .health-value {
+      font-weight: var(--bt-font-weight-bold);
+      min-width: 120px;
+    }
+    .loading-state {
+      text-align: center;
+      padding: var(--bt-space-3xl);
+      color: var(--bt-color-text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Health Container -->
+  <div class="health-container">
+
+    <!-- Header -->
+    <header class="health-header">
+      <h1>Health Dashboard</h1>
+      <div class="health-stats">
+        <span>Daily Energy: <strong id="daily-energy">Loading...</strong></span>
+        <span>Burnout Risk: <strong id="burnout-risk">0</strong></span>
+        <span>Sleep Score: <strong id="sleep-score">Loading...</strong></span>
+      </div>
+    </header>
+
+    <!-- Controls -->
+    <section class="health-controls">
+      <button id="log-workout-btn" class="btn btn-primary">+ Log Workout</button>
+      <button id="log-sleep-btn" class="btn btn-success">+ Log Sleep</button>
+      <button id="log-nutrition-btn" class="btn btn-info">+ Log Nutrition</button>
+      <button id="log-hydration-btn" class="btn btn-warning">+ Log Hydration</button>
+      <input type="text" id="health-search" class="input" placeholder="Search health records..."/>
+      <select id="health-filter" class="select">
+        <option value="all">All Records</option>
+        <option value="today">Today</option>
+        <option value="week">This Week</option>
+        <option value="month">This Month</option>
+      </select>
+    </section>
+
+    <!-- Summary Cards -->
+    <section class="health-summary">
+      <div class="health-card">
+        <div class="health-card-label">Daily Score</div>
+        <div id="daily-health-score" class="health-card-value">0</div>
+      </div>
+      <div class="health-card">
+        <div class="health-card-label">Workouts This Week</div>
+        <div id="weekly-workouts" class="health-card-value">0</div>
+      </div>
+      <div class="health-card">
+        <div class="health-card-label">Avg Sleep Hours</div>
+        <div id="avg-sleep" class="health-card-value">0h</div>
+      </div>
+      <div class="health-card">
+        <div class="health-card-label">Burnout Risk</div>
+        <div id="burnout-level" class="health-card-value">0</div>
+      </div>
+    </section>
+
+    <!-- Health Tracking Records -->
+    <section id="health-tracking" class="health-tracking">
+      <!-- Records populated dynamically -->
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading health records...</p>
+      </div>
+    </section>
+
+    <!-- Energy Panel -->
+    <section id="energy-panel" class="analytics-section">
+      <h2>Energy Levels</h2>
+      <!-- Energy trend chart or graph placeholder -->
+    </section>
+
+    <!-- Sleep Panel -->
+    <section id="sleep-panel" class="analytics-section">
+      <h2>Sleep Patterns</h2>
+      <!-- Sleep trend chart placeholder -->
+    </section>
+
+    <!-- Workout Panel -->
+    <section id="workout-panel" class="analytics-section">
+      <h2>Workout Activity</h2>
+      <!-- Workout frequency chart placeholder -->
+    </section>
+
+    <!-- Health Analytics -->
+    <section id="health-analytics" class="analytics-section">
+      <h2>Health Trends</h2>
+      <!-- Charts populated by charts.ui.js -->
+    </section>
+
+  </div>
+
+  <!-- Modal Root -->
+  <div id="modal-root"></div>
+
+  <!-- JavaScript Loading Order – Optimized for health page -->
+  <!-- Core -->
+  <script src="assets/js/core/08-storage.js"></script>
+  <script src="assets/js/core/09-state.js"></script>
+  <script src="assets/js/core/10-versioning.js"></script>
+  <script src="assets/js/core/11-eventbus.js"></script>
+
+  <!-- Health & Burnout Engines (core for this page) -->
+  <script src="assets/js/engine/21-health.engine.js"></script>
+  <script src="assets/js/engine/28-burnout.engine.js"></script>
+
+  <!-- UI & Router -->
+  <script src="assets/js/ui/32-router.js"></script>
+  <script src="assets/js/ui/33-view.manager.js"></script>
+  <script src="assets/js/ui/35-dashboard.ui.js"></script>
+  <script src="assets/js/ui/36-sidebar.ui.js"></script>
+  <script src="assets/js/ui/37-header.ui.js"></script>
+  <script src="assets/js/ui/38-alerts.ui.js"></script>
+  <script src="assets/js/ui/39-modals.ui.js"></script>
+  <script src="assets/js/ui/40-charts.ui.js"></script>
+
+  <!-- Boot -->
+  <script src="assets/js/core/43-boot.js"></script>
+
+  <!-- Health-specific script -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Update health summary
+      function updateHealthSummary() {
+        const health = HealthEngine?.calculateHealthMetrics?.() || {};
+        const burnout = BurnoutEngine?.getBurnoutMetrics?.() || {};
+
+        document.getElementById("daily-health-score").textContent = health.metrics?.dailyScore || 0;
+        document.getElementById("burnout-level").textContent = burnout.burnoutIndex || 0;
+
+        // Weekly workouts placeholder
+        const records = health.records || [];
+        const workoutsThisWeek = records.filter(r => r.type === 'workout' && new Date(r.timestamp) >= Date.now() - 7*24*60*60*1000).length;
+        document.getElementById("weekly-workouts").textContent = workoutsThisWeek;
+
+        // Avg sleep
+        const sleepRecords = records.filter(r => r.type === 'sleep');
+        const avgSleep = sleepRecords.length > 0 
+          ? (sleepRecords.reduce((sum, s) => sum + s.durationHours, 0) / sleepRecords.length).toFixed(1)
+          : '0.0';
+        document.getElementById("avg-sleep").textContent = `${avgSleep}h`;
+      }
+
+      // Render health records list
+      function renderHealthRecords() {
+        const tracking = document.getElementById("health-tracking");
+        if (!tracking) return;
+
+        const records = HealthEngine?.getHealthRecords?.() || [];
+        tracking.innerHTML = '';
+
+        if (records.length === 0) {
+          tracking.innerHTML = '<div class="loading-state"><p>No health records yet. Start logging your health!</p></div>';
+          return;
+        }
+
+        const list = document.createElement('div');
+        list.className = 'health-records-list';
+
+        records.slice(-10).reverse().forEach(record => { // Show recent 10
+          const item = document.createElement('div');
+          item.className = `health-item ${record.type}`;
+          item.dataset.recordId = record.recordId;
+
+          let content = '';
+          if (record.type === 'workout') {
+            content = `
+              <div class="health-type">Workout</div>
+              <div class="health-value">${record.workoutType} - ${record.durationMinutes} min</div>
+              <div>Calories: ${record.caloriesBurned || 'N/A'}</div>
+            `;
+          } else if (record.type === 'sleep') {
+            content = `
+              <div class="health-type">Sleep</div>
+              <div class="health-value">${record.durationHours}h - Quality: ${record.sleepQuality}/5</div>
+            `;
+          } else if (record.type === 'nutrition') {
+            content = `
+              <div class="health-type">Nutrition</div>
+              <div class="health-value">${record.calories} cal (P:${record.protein}g C:${record.carbs}g F:${record.fat}g)</div>
+            `;
+          } else if (record.type === 'hydration') {
+            content = `
+              <div class="health-type">Hydration</div>
+              <div class="health-value">${record.amountMl} ml</div>
+            `;
+          }
+
+          item.innerHTML = `
+            ${content}
+            <div class="health-time">${new Date(record.timestamp).toLocaleString([], {dateStyle: 'medium', timeStyle: 'short'})}</div>
+            <button class="btn btn-small btn-danger delete-record" data-record-id="${record.recordId}">Delete</button>
+          `;
+
+          // Delete button
+          item.querySelector('.delete-record')?.addEventListener('click', () => {
+            if (confirm('Delete this health record?')) {
+              // HealthEngine?.deleteHealthRecord?.(record.recordId); // Add delete method if needed
+            }
+          });
+
+          list.appendChild(item);
+        });
+
+        tracking.appendChild(list);
+      }
+
+      // Event listeners
+      EventBus.on('HEALTH_WORKOUT_LOGGED', () => {
+        renderHealthRecords();
+        updateHealthSummary();
+      });
+
+      EventBus.on('HEALTH_SLEEP_LOGGED', () => {
+        renderHealthRecords();
+        updateHealthSummary();
+      });
+
+      EventBus.on('HEALTH_NUTRITION_LOGGED', () => {
+        renderHealthRecords();
+        updateHealthSummary();
+      });
+
+      EventBus.on('HEALTH_HYDRATION_LOGGED', () => {
+        renderHealthRecords();
+        updateHealthSummary();
+      });
+
+      EventBus.on('HEALTH_METRICS_UPDATED', updateHealthSummary);
+
+      // Log buttons
+      document.getElementById("log-workout-btn")?.addEventListener("click", () => {
+        ModalsUI?.open?.('addHealth', { type: 'workout' });
+      });
+
+      document.getElementById("log-sleep-btn")?.addEventListener("click", () => {
+        ModalsUI?.open?.('addHealth', { type: 'sleep' });
+      });
+
+      document.getElementById("log-nutrition-btn")?.addEventListener("click", () => {
+        ModalsUI?.open?.('addHealth', { type: 'nutrition' });
+      });
+
+      document.getElementById("log-hydration-btn")?.addEventListener("click", () => {
+        ModalsUI?.open?.('addHealth', { type: 'hydration' });
+      });
+
+      // Initial render
+      updateHealthSummary();
+      renderHealthRecords();
+
+      // Hide loading when data ready
+      EventBus.on("BOOT_COMPLETE", () => {
+        document.querySelector(".loading-state")?.remove();
+      });
+    });
+  </script>
+
+</body>
+</html>

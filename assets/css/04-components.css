@@ -1,0 +1,520 @@
+/*
+ * 04-components.css
+ * Reusable UI Component Library – Billionaire Tech Adaptive Life OS
+ *
+ * Implements atomic + molecular UI pieces that live inside layout containers.
+ * Loaded after layout.css — applies visual skin & micro-layout to components.
+ *
+ * Design inspiration: Stripe Dashboard + Linear + modern SaaS patterns
+ * 
+ * Strictly NO full-page layout, NO keyframes, NO media queries, NO theme overrides.
+ *
+ * Version: 1.0.0 – March 2026
+ */
+
+/* ==========================================================================
+   1. BUTTON SYSTEM
+========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--bt-space-sm);
+  padding: var(--bt-space-sm) var(--bt-space-lg);
+  border-radius: var(--bt-radius-md);
+  font-weight: var(--bt-font-weight-medium);
+  font-size: var(--bt-font-size-md);
+  line-height: 1.5;
+  cursor: pointer;
+  transition: all var(--bt-animation-fast) var(--bt-easing-standard);
+  white-space: nowrap;
+}
+
+.btn:disabled,
+.btn[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn-primary {
+  background: var(--bt-color-primary);
+  color: white;
+  border: 1px solid var(--bt-color-primary-dark);
+}
+
+.btn-primary:hover {
+  background: var(--bt-color-primary-dark);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--bt-color-bg-surface);
+  color: var(--bt-color-text-primary);
+  border: 1px solid var(--bt-color-border);
+}
+
+.btn-secondary:hover {
+  background: var(--bt-color-bg-hover);
+  border-color: var(--bt-color-border-strong);
+}
+
+.btn-success  { background: var(--bt-color-success);  color: white; border: 1px solid var(--bt-color-success-dark); }
+.btn-warning  { background: var(--bt-color-warning);  color: white; border: 1px solid var(--bt-color-warning-dark); }
+.btn-danger   { background: var(--bt-color-danger);   color: white; border: 1px solid var(--bt-color-danger-dark); }
+.btn-ghost    { background: transparent; border: 1px solid var(--bt-color-border); color: var(--bt-color-text-primary); }
+.btn-ghost:hover { background: var(--bt-color-bg-hover); }
+
+.btn-icon {
+  padding: var(--bt-space-sm);
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--bt-radius-md);
+}
+
+.btn-sm { padding: var(--bt-space-xs) var(--bt-space-md); font-size: var(--bt-font-size-sm); }
+.btn-lg { padding: var(--bt-space-md) var(--bt-space-xl); font-size: var(--bt-font-size-lg); }
+
+/* ==========================================================================
+   2. CARD COMPONENTS
+========================================================================== */
+
+.card {
+  background: var(--bt-color-bg-card);
+  border: 1px solid var(--bt-color-border);
+  border-radius: var(--bt-radius-lg);
+  box-shadow: var(--bt-shadow-md);
+  overflow: hidden;
+  transition: transform var(--bt-animation-fast), box-shadow var(--bt-animation-fast);
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--bt-shadow-lg);
+}
+
+.card-header {
+  padding: var(--bt-space-md) var(--bt-space-lg);
+  border-bottom: 1px solid var(--bt-color-border);
+  font-weight: var(--bt-font-weight-semibold);
+  font-size: var(--bt-font-size-lg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--bt-space-md);
+}
+
+.card-body {
+  padding: var(--bt-space-lg);
+}
+
+.card-footer {
+  padding: var(--bt-space-md) var(--bt-space-lg);
+  border-top: 1px solid var(--bt-color-border);
+  background: rgba(0,0,0,0.03);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--bt-space-md);
+}
+
+/* Variants */
+.metric-card {
+  text-align: center;
+  padding: var(--bt-space-xl) var(--bt-space-lg);
+}
+
+.execution-card {
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+}
+
+.analytics-card,
+.admin-card {
+  height: 100%;
+}
+
+/* ==========================================================================
+   3. PROGRESS BARS
+========================================================================== */
+
+.progress {
+  height: 10px;
+  background: var(--bt-color-bg-surface);
+  border-radius: var(--bt-radius-pill);
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  transition: width var(--bt-animation-medium) var(--bt-easing-decelerate);
+}
+
+.progress-success .progress-fill { background: var(--bt-color-success); }
+.progress-warning .progress-fill { background: var(--bt-color-warning); }
+.progress-danger  .progress-fill { background: var(--bt-color-danger);  }
+
+.progress-label {
+  font-size: var(--bt-font-size-sm);
+  color: var(--bt-color-text-secondary);
+  margin-bottom: var(--bt-space-xs);
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ==========================================================================
+   4. RANK PROGRESS (specialized)
+========================================================================== */
+
+.rank-progress {
+  height: 14px;
+  background: var(--bt-color-bg-surface);
+  border-radius: var(--bt-radius-pill);
+  overflow: hidden;
+  position: relative;
+}
+
+.rank-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--bt-rank-beginner), currentColor);
+  transition: width var(--bt-animation-medium);
+}
+
+.rank-label {
+  font-weight: var(--bt-font-weight-semibold);
+  font-size: var(--bt-font-size-xl);
+  margin-bottom: var(--bt-space-xs);
+}
+
+.rank-xp {
+  font-size: var(--bt-font-size-sm);
+  color: var(--bt-color-text-muted);
+}
+
+/* ==========================================================================
+   5. BADGE SYSTEM
+========================================================================== */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--bt-space-xs);
+  padding: var(--bt-space-xs) var(--bt-space-sm);
+  border-radius: var(--bt-radius-pill);
+  font-size: var(--bt-font-size-xs);
+  font-weight: var(--bt-font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-tier-1 { background: var(--bt-badge-tier-1); color: white; }
+.badge-tier-2 { background: var(--bt-badge-tier-2); color: #0f172a; }
+.badge-tier-3 { background: var(--bt-badge-tier-3); color: white; }
+.badge-tier-4 { background: var(--bt-badge-tier-4); color: #0f172a; }
+.badge-tier-5 { background: var(--bt-badge-tier-5); color: white; box-shadow: 0 0 12px rgba(236,72,153,0.5); }
+
+/* ==========================================================================
+   6. ALERT & BANNER COMPONENTS
+========================================================================== */
+
+.alert {
+  padding: var(--bt-space-md) var(--bt-space-lg);
+  border-radius: var(--bt-radius-md);
+  border-left: 4px solid;
+  background: rgba(255,255,255,0.04);
+}
+
+.alert-success { border-color: var(--bt-color-success); background: var(--bt-alert-success-bg); }
+.alert-warning { border-color: var(--bt-color-warning); background: var(--bt-alert-warning-bg); }
+.alert-danger  { border-color: var(--bt-color-danger);  background: var(--bt-alert-danger-bg);  }
+.alert-info    { border-color: var(--bt-color-info);    background: rgba(6,182,212,0.12); }
+
+.risk-banner,
+.lockdown-banner {
+  padding: var(--bt-space-lg);
+  text-align: center;
+  font-weight: var(--bt-font-weight-bold);
+  border-radius: 0 0 var(--bt-radius-lg) var(--bt-radius-lg);
+}
+
+.risk-low    { background: var(--bt-risk-low);    color: white; }
+.risk-medium { background: var(--bt-risk-medium); color: #0f172a; }
+.risk-high   { background: var(--bt-risk-high);   color: white; }
+.risk-critical { background: var(--bt-risk-critical); color: white; }
+
+/* ==========================================================================
+   7. FORM CONTROLS
+========================================================================== */
+
+.form-group {
+  margin-bottom: var(--bt-space-lg);
+}
+
+.form-label {
+  display: block;
+  margin-bottom: var(--bt-space-xs);
+  font-weight: var(--bt-font-weight-medium);
+  font-size: var(--bt-font-size-sm);
+  color: var(--bt-color-text-secondary);
+}
+
+.input,
+.textarea,
+.select {
+  width: 100%;
+  padding: var(--bt-space-sm) var(--bt-space-md);
+  background: var(--bt-color-bg-surface);
+  border: 1px solid var(--bt-color-border);
+  border-radius: var(--bt-radius-md);
+  color: var(--bt-color-text-primary);
+  font-size: var(--bt-font-size-md);
+  transition: border-color var(--bt-animation-fast);
+}
+
+.input:focus,
+.textarea:focus,
+.select:focus {
+  outline: none;
+  border-color: var(--bt-color-primary);
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+}
+
+.input-error {
+  border-color: var(--bt-color-danger);
+}
+
+.input-error:focus {
+  box-shadow: 0 0 0 3px rgba(239,68,68,0.15);
+}
+
+/* ==========================================================================
+   8. TOGGLE SWITCH
+========================================================================== */
+
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+}
+
+.toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-track {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: var(--bt-color-border);
+  border-radius: 34px;
+  transition: background var(--bt-animation-fast);
+}
+
+.toggle-thumb {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: transform var(--bt-animation-fast);
+}
+
+.toggle input:checked + .toggle-track {
+  background: var(--bt-color-primary);
+}
+
+.toggle input:checked + .toggle-track .toggle-thumb {
+  transform: translateX(20px);
+}
+
+/* ==========================================================================
+   9. TABS
+========================================================================== */
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--bt-color-border);
+  margin-bottom: var(--bt-space-lg);
+}
+
+.tab {
+  padding: var(--bt-space-sm) var(--bt-space-lg);
+  cursor: pointer;
+  font-weight: var(--bt-font-weight-medium);
+  color: var(--bt-color-text-secondary);
+  border-bottom: 2px solid transparent;
+  transition: all var(--bt-animation-fast);
+}
+
+.tab:hover {
+  color: var(--bt-color-text-primary);
+}
+
+.tab-active {
+  color: var(--bt-color-primary);
+  border-bottom-color: var(--bt-color-primary);
+}
+
+/* ==========================================================================
+   10. DROPDOWN MENU
+========================================================================== */
+
+.dropdown-menu {
+  position: absolute;
+  background: var(--bt-color-bg-card);
+  border: 1px solid var(--bt-color-border);
+  border-radius: var(--bt-radius-lg);
+  box-shadow: var(--bt-shadow-xl);
+  min-width: 180px;
+  z-index: var(--bt-z-dropdown);
+  overflow: hidden;
+  padding: var(--bt-space-xs) 0;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: var(--bt-space-sm);
+  padding: var(--bt-space-sm) var(--bt-space-lg);
+  color: var(--bt-color-text-primary);
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: var(--bt-color-bg-hover);
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: var(--bt-color-border);
+  margin: var(--bt-space-xs) 0;
+}
+
+/* ==========================================================================
+   11. TABLES
+========================================================================== */
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table-head th {
+  background: rgba(30,41,59,0.4);
+  padding: var(--bt-space-md);
+  text-align: left;
+  font-weight: var(--bt-font-weight-semibold);
+  color: var(--bt-color-text-secondary);
+  border-bottom: 1px solid var(--bt-color-border);
+}
+
+.table-row {
+  background: var(--bt-color-bg-card);
+}
+
+.table-row:hover {
+  background: var(--bt-color-bg-hover);
+}
+
+.table-cell {
+  padding: var(--bt-space-md);
+  border-bottom: 1px solid var(--bt-color-border);
+}
+
+.table-striped .table-row:nth-child(odd) {
+  background: rgba(15,23,42,0.3);
+}
+
+/* ==========================================================================
+   12. STREAK INDICATORS
+========================================================================== */
+
+.streak-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--bt-space-sm);
+  font-weight: var(--bt-font-weight-semibold);
+  font-size: var(--bt-font-size-lg);
+  color: var(--bt-color-warning);
+}
+
+.streak-active {
+  color: var(--bt-color-success);
+  animation: pulse-glow 2s infinite;
+}
+
+.streak-milestone {
+  background: var(--bt-color-warning);
+  color: #0f172a;
+  padding: var(--bt-space-xs) var(--bt-space-sm);
+  border-radius: var(--bt-radius-pill);
+  font-size: var(--bt-font-size-sm);
+}
+
+/* ==========================================================================
+   13. THOUGHT TICKER
+========================================================================== */
+
+.ticker {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.ticker-item {
+  display: inline-block;
+  padding: var(--bt-space-xs) var(--bt-space-md);
+  background: rgba(236,72,153,0.08);
+  border-radius: var(--bt-radius-sm);
+  margin-right: var(--bt-space-md);
+  color: var(--bt-thought-ticker-text);
+}
+
+/* ==========================================================================
+   14. MANIFESTATION CARDS
+========================================================================== */
+
+.manifest-card {
+  border-left: 4px solid;
+  padding-left: var(--bt-space-lg);
+}
+
+.manifest-morning  { border-color: var(--bt-manifest-morning);  }
+.manifest-night    { border-color: var(--bt-manifest-night);    }
+.manifest-thought  { border-color: var(--bt-manifest-thought);  }
+.manifest-goal     { border-color: var(--bt-manifest-goal);     }
+.manifest-success  { border-color: var(--bt-manifest-success);  }
+
+/* ==========================================================================
+   15. LOADING / EMPTY / ERROR STATES
+========================================================================== */
+
+.loading,
+.empty-state,
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--bt-space-2xl);
+  color: var(--bt-color-text-muted);
+  min-height: 180px;
+}
+
+.empty-state svg,
+.error-state svg {
+  width: 64px;
+  height: 64px;
+  margin-bottom: var(--bt-space-lg);
+  opacity: 0.4;
+}

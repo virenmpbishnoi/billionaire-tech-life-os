@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="default">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Goals & Missions – Adaptive Life OS"/>
+  <title>Goals & Missions – Adaptive Life OS</title>
+
+  <!-- Favicon & Meta -->
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon"/>
+  <meta name="theme-color" content="#0f172a"/>
+
+  <!-- CSS Loading Order – Critical: Do NOT change -->
+  <link rel="stylesheet" href="assets/css/01-variables.css"/>
+  <link rel="stylesheet" href="assets/css/02-base.css"/>
+  <link rel="stylesheet" href="assets/css/03-layout.css"/>
+  <link rel="stylesheet" href="assets/css/04-components.css"/>
+  <link rel="stylesheet" href="assets/css/05-animations.css"/>
+  <link rel="stylesheet" href="assets/css/06-responsive.css"/>
+  <link rel="stylesheet" href="assets/css/07-themes.css"/>
+
+  <style>
+    /* Minimal inline critical CSS for fast paint */
+    body {
+      margin: 0;
+      font-family: var(--bt-font-family-primary);
+      background: var(--bt-color-bg-main);
+      color: var(--bt-color-text-primary);
+      min-height: 100vh;
+    }
+    .goals-container {
+      max-width: var(--bt-container-max);
+      margin: 0 auto;
+      padding: var(--bt-space-xl);
+    }
+    .goals-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--bt-space-2xl);
+    }
+    .goals-controls {
+      display: flex;
+      gap: var(--bt-space-lg);
+      margin-bottom: var(--bt-space-xl);
+      flex-wrap: wrap;
+    }
+    .goals-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--bt-space-lg);
+      margin-bottom: var(--bt-space-2xl);
+    }
+    .goal-card {
+      background: var(--bt-color-bg-card);
+      border-radius: var(--bt-radius-lg);
+      padding: var(--bt-space-lg);
+      border: 1px solid var(--bt-color-border);
+      box-shadow: var(--bt-shadow-md);
+      text-align: center;
+    }
+    .goal-card-value {
+      font-size: var(--bt-font-size-3xl);
+      font-weight: var(--bt-font-weight-bold);
+      margin: var(--bt-space-sm) 0;
+    }
+    .goal-card-label {
+      color: var(--bt-color-text-secondary);
+    }
+    .mission-panel {
+      background: var(--bt-color-bg-card);
+      border-radius: var(--bt-radius-lg);
+      border: 1px solid var(--bt-color-border);
+      overflow: hidden;
+      margin-bottom: var(--bt-space-2xl);
+    }
+    .mission-item {
+      padding: var(--bt-space-md) var(--bt-space-lg);
+      border-bottom: 1px solid var(--bt-color-border);
+      display: flex;
+      flex-direction: column;
+      gap: var(--bt-space-md);
+    }
+    .mission-item:last-child {
+      border-bottom: none;
+    }
+    .mission-title {
+      font-weight: var(--bt-font-weight-semibold);
+      font-size: var(--bt-font-size-lg);
+    }
+    .mission-progress {
+      height: 8px;
+      background: var(--bt-color-bg-surface);
+      border-radius: var(--bt-radius-pill);
+      overflow: hidden;
+    }
+    .mission-progress-bar {
+      height: 100%;
+      background: var(--bt-color-primary);
+      transition: width var(--bt-animation-medium);
+    }
+    .loading-state {
+      text-align: center;
+      padding: var(--bt-space-3xl);
+      color: var(--bt-color-text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Goals Container -->
+  <div class="goals-container">
+
+    <!-- Header -->
+    <header class="goals-header">
+      <h1>Goals & Missions Dashboard</h1>
+      <div class="goals-stats">
+        <span>Active Missions: <strong id="active-missions">0</strong></span>
+        <span>Completed Goals: <strong id="completed-goals">0</strong></span>
+        <span>Rank Progress: <strong id="rank-progress">0%</strong></span>
+      </div>
+    </header>
+
+    <!-- Controls -->
+    <section class="goals-controls">
+      <button id="create-mission-btn" class="btn btn-primary">+ New Mission</button>
+      <button id="create-target-btn" class="btn btn-success">+ New Target</button>
+      <input type="text" id="goal-search" class="input" placeholder="Search goals & missions..."/>
+      <select id="goal-filter" class="select">
+        <option value="all">All Goals & Missions</option>
+        <option value="active">Active Only</option>
+        <option value="completed">Completed</option>
+        <option value="overdue">Overdue</option>
+        <option value="long-term">Long-term</option>
+      </select>
+      <select id="category-filter" class="select">
+        <option value="all">All Categories</option>
+        <!-- Categories populated dynamically if needed -->
+      </select>
+    </section>
+
+    <!-- Summary Cards -->
+    <section class="goals-summary">
+      <div class="goal-card">
+        <div class="goal-card-label">Total Goals</div>
+        <div id="total-goals" class="goal-card-value">0</div>
+      </div>
+      <div class="goal-card">
+        <div class="goal-card-label">Active Goals</div>
+        <div id="active-goals" class="goal-card-value">0</div>
+      </div>
+      <div class="goal-card">
+        <div class="goal-card-label">Completed Goals</div>
+        <div id="completed-goals-card" class="goal-card-value">0</div>
+      </div>
+      <div class="goal-card">
+        <div class="goal-card-label">Milestones Reached</div>
+        <div id="milestones-reached" class="goal-card-value">0</div>
+      </div>
+    </section>
+
+    <!-- Mission Panel -->
+    <section id="mission-panel" class="mission-panel">
+      <!-- Missions populated dynamically -->
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading missions...</p>
+      </div>
+    </section>
+
+    <!-- Target List -->
+    <section id="target-list" class="target-list">
+      <!-- Targets populated dynamically -->
+    </section>
+
+    <!-- Milestone Overview -->
+    <section id="milestone-panel" class="analytics-section">
+      <h2>Milestone Progress</h2>
+      <!-- Milestone visualization placeholder -->
+    </section>
+
+    <!-- Goals Analytics -->
+    <section id="goal-analytics" class="analytics-section">
+      <h2>Goal & Mission Trends</h2>
+      <!-- Charts populated by charts.ui.js -->
+    </section>
+
+  </div>
+
+  <!-- Modal Root -->
+  <div id="modal-root"></div>
+
+  <!-- JavaScript Loading Order – Optimized for goals page -->
+  <!-- Core -->
+  <script src="assets/js/core/08-storage.js"></script>
+  <script src="assets/js/core/09-state.js"></script>
+  <script src="assets/js/core/10-versioning.js"></script>
+  <script src="assets/js/core/11-eventbus.js"></script>
+
+  <!-- Mission & Target Engines (core for this page) -->
+  <script src="assets/js/engine/19-mission.engine.js"></script>
+  <script src="assets/js/engine/22-target.engine.js"></script>
+  <script src="assets/js/engine/29-rank.engine.js"></script>
+
+  <!-- UI & Router -->
+  <script src="assets/js/ui/32-router.js"></script>
+  <script src="assets/js/ui/33-view.manager.js"></script>
+  <script src="assets/js/ui/35-dashboard.ui.js"></script>
+  <script src="assets/js/ui/36-sidebar.ui.js"></script>
+  <script src="assets/js/ui/37-header.ui.js"></script>
+  <script src="assets/js/ui/38-alerts.ui.js"></script>
+  <script src="assets/js/ui/39-modals.ui.js"></script>
+  <script src="assets/js/ui/40-charts.ui.js"></script>
+
+  <!-- Boot -->
+  <script src="assets/js/core/43-boot.js"></script>
+
+  <!-- Goals-specific script -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Update goals summary
+      function updateGoalsSummary() {
+        const missions = MissionEngine?.getMissions?.() || [];
+        const targets = TargetEngine?.getTargets?.() || [];
+
+        document.getElementById("active-missions").textContent = missions.filter(m => m.status === 'active').length;
+        document.getElementById("completed-goals").textContent = targets.filter(t => t.status === 'completed').length;
+
+        const rank = RankEngine?.getCurrentRank?.();
+        document.getElementById("rank-progress").textContent = `${rank?.progressToNext || 0}%`;
+      }
+
+      // Render mission panel
+      function renderMissionPanel() {
+        const panel = document.getElementById("mission-panel");
+        if (!panel) return;
+
+        const missions = MissionEngine?.getMissions?.() || [];
+        panel.innerHTML = '';
+
+        if (missions.length === 0) {
+          panel.innerHTML = '<div class="loading-state"><p>No missions yet. Create your first mission!</p></div>';
+          return;
+        }
+
+        const list = document.createElement('div');
+        list.className = 'mission-list';
+
+        missions.forEach(mission => {
+          const item = document.createElement('div');
+          item.className = `mission-item ${mission.status}`;
+          item.dataset.missionId = mission.missionId;
+
+          item.innerHTML = `
+            <div class="mission-title">${mission.title}</div>
+            <div class="mission-description">${mission.description || ''}</div>
+            <div class="mission-progress">
+              <div class="mission-progress-bar" style="width: ${mission.progress || 0}%"></div>
+            </div>
+            <div class="mission-meta">
+              <span>Progress: ${mission.progress || 0}%</span>
+              ${mission.completedAt ? `<span>Completed: ${new Date(mission.completedAt).toLocaleDateString()}</span>` : ''}
+            </div>
+          `;
+
+          list.appendChild(item);
+        });
+
+        panel.appendChild(list);
+      }
+
+      // Render target list (simplified)
+      function renderTargetList() {
+        const list = document.getElementById("target-list");
+        if (!list) return;
+
+        const targets = TargetEngine?.getTargets?.() || [];
+        list.innerHTML = '';
+
+        if (targets.length === 0) {
+          list.innerHTML = '<div class="loading-state"><p>No targets yet. Create your first target!</p></div>';
+          return;
+        }
+
+        targets.forEach(target => {
+          const item = document.createElement('div');
+          item.className = `target-item ${target.status}`;
+          item.dataset.targetId = target.targetId;
+
+          item.innerHTML = `
+            <div class="target-title">${target.title}</div>
+            <div class="target-progress">
+              <div class="target-progress-bar" style="width: ${target.progress || 0}%"></div>
+              <span>${target.progress || 0}%</span>
+            </div>
+            <div class="target-deadline">${target.deadline ? new Date(target.deadline).toLocaleDateString() : 'No deadline'}</div>
+          `;
+
+          list.appendChild(item);
+        });
+      }
+
+      // Event listeners
+      EventBus.on('MISSION_CREATED', () => {
+        renderMissionPanel();
+        updateGoalsSummary();
+      });
+
+      EventBus.on('MISSION_UPDATED', () => {
+        renderMissionPanel();
+        updateGoalsSummary();
+      });
+
+      EventBus.on('MISSION_COMPLETED', () => {
+        renderMissionPanel();
+        updateGoalsSummary();
+      });
+
+      EventBus.on('TARGET_CREATED', () => {
+        renderTargetList();
+        updateGoalsSummary();
+      });
+
+      EventBus.on('TARGET_UPDATED', () => {
+        renderTargetList();
+        updateGoalsSummary();
+      });
+
+      EventBus.on('TARGET_COMPLETED', () => {
+        renderTargetList();
+        updateGoalsSummary();
+      });
+
+      EventBus.on('RANK_UPDATED', updateGoalsSummary);
+
+      // Create mission/target buttons
+      document.getElementById("create-mission-btn")?.addEventListener("click", () => {
+        ModalsUI?.open?.('addMission');
+      });
+
+      document.getElementById("create-target-btn")?.addEventListener("click", () => {
+        ModalsUI?.open?.('addGoal');
+      });
+
+      // Initial render
+      updateGoalsSummary();
+      renderMissionPanel();
+      renderTargetList();
+
+      // Hide loading when data ready
+      EventBus.on("BOOT_COMPLETE", () => {
+        document.querySelector(".loading-state")?.remove();
+      });
+    });
+  </script>
+
+</body>
+</html>

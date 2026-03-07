@@ -1,0 +1,242 @@
+/*
+ * 01-variables.css
+ * Global Design Token System – Billionaire Tech Adaptive Life OS
+ * 
+ * Central source of truth for all visual design decisions.
+ * Loaded FIRST in every HTML document.
+ * 
+ * Version: 1.0.0 – Initial system (March 2026)
+ * No layout, no components, no keyframes allowed here.
+ */
+
+:root {
+  /* ==========================================================================
+     1. CORE COLOR PALETTE – Foundation colors
+  ========================================================================== */
+  --bt-color-primary: #3b82f6;           /* Blue – main action color */
+  --bt-color-primary-light: #60a5fa;
+  --bt-color-primary-dark: #2563eb;
+  --bt-color-primary-900: #1e40af;
+  
+  --bt-color-secondary: #6b7280;         /* Cool gray – supporting */
+  --bt-color-secondary-light: #9ca3af;
+  --bt-color-secondary-dark: #4b5563;
+  
+  --bt-color-accent: #ec4899;            /* Magenta – highlight / energy */
+  --bt-color-accent-light: #f472b6;
+  --bt-color-accent-dark: #db2777;
+
+  --bt-color-success: #10b981;           /* Green – achievement / positive */
+  --bt-color-success-light: #34d399;
+  --bt-color-success-dark: #059669;
+  
+  --bt-color-warning: #f59e0b;           /* Amber – attention / progress */
+  --bt-color-warning-light: #fbbf24;
+  --bt-color-warning-dark: #d97706;
+  
+  --bt-color-danger: #ef4444;            /* Red – alerts / risk */
+  --bt-color-danger-light: #f87171;
+  --bt-color-danger-dark: #dc2626;
+  
+  --bt-color-info: #06b6d4;              /* Cyan – information / learning */
+  --bt-color-info-light: #22d3ee;
+  --bt-color-info-dark: #0891b2;
+
+  /* ==========================================================================
+     2. NEUTRAL COLOR SYSTEM – Backgrounds, text, borders
+  ========================================================================== */
+  --bt-color-bg-main: #0f172a;           /* Slate-950 – dark mode default */
+  --bt-color-bg-card: #1e293b;           /* Slate-800 – cards / panels */
+  --bt-color-bg-sidebar: #111827;        /* Gray-900 – sidebar */
+  --bt-color-bg-header: #0f172a;         /* Same as main for cohesion */
+  --bt-color-bg-modal: rgba(15, 23, 42, 0.92);
+  --bt-color-bg-surface: #334155;        /* Elevated surfaces */
+  --bt-color-bg-hover: rgba(59, 130, 246, 0.08);
+  --bt-color-bg-active: rgba(59, 130, 246, 0.16);
+
+  --bt-color-border: #334155;            /* Subtle borders */
+  --bt-color-border-soft: #475569;
+  --bt-color-border-strong: #64748b;
+
+  --bt-color-text-primary: #f1f5f9;      /* Slate-100 – main text */
+  --bt-color-text-secondary: #cbd5e1;    /* Slate-300 */
+  --bt-color-text-muted: #94a3b8;        /* Slate-400 */
+  --bt-color-text-inverse: #0f172a;      /* For light backgrounds */
+
+  /* ==========================================================================
+     3. RISK LEVEL INDICATORS
+  ========================================================================== */
+  --bt-risk-low: #10b981;                /* Green */
+  --bt-risk-medium: #f59e0b;             /* Amber */
+  --bt-risk-high: #ef4444;               /* Red */
+  --bt-risk-critical: #b91c1c;           /* Darker red – emergency */
+
+  /* ==========================================================================
+     4. LOCKDOWN MODE OVERRIDE COLORS
+  ========================================================================== */
+  --bt-lockdown-bg: #111827;
+  --bt-lockdown-border: #ef4444;
+  --bt-lockdown-text: #fee2e2;
+  --bt-lockdown-banner: #7f1d1d;
+  --bt-lockdown-accent: #f87171;
+
+  /* ==========================================================================
+     5. RANK THEME PALETTES – Progression hierarchy
+  ========================================================================== */
+  --bt-rank-beginner: #6b7280;
+  --bt-rank-disciplined: #64748b;
+  --bt-rank-performer: #3b82f6;
+  --bt-rank-achiever: #8b5cf6;
+  --bt-rank-executor: #ec4899;
+  --bt-rank-elite: #f59e0b;
+  --bt-rank-champion: #eab308;
+  --bt-rank-legend: #a16207;
+  --bt-rank-grandmaster: #ca8a04;
+
+  /* ==========================================================================
+     6. BADGE TIER COLORS
+  ========================================================================== */
+  --bt-badge-tier-1: #94a3b8;            /* Bronze-ish neutral */
+  --bt-badge-tier-2: #eab308;            /* Gold */
+  --bt-badge-tier-3: #a1a1aa;
+  --bt-badge-tier-4: #06b6d4;            /* Diamond / cyan */
+  --bt-badge-tier-5: #ec4899;            /* Legendary magenta */
+
+  /* ==========================================================================
+     7. MANIFESTATION CATEGORY COLORS
+  ========================================================================== */
+  --bt-manifest-morning: #fbbf24;        /* Warm sunrise amber */
+  --bt-manifest-night: #7c3aed;          /* Deep violet – reflection */
+  --bt-manifest-thought: #60a5fa;        /* Clear blue – clarity */
+  --bt-manifest-goal: #10b981;           /* Growth green */
+  --bt-manifest-success: #ec4899;        /* Victory magenta */
+
+  /* ==========================================================================
+     8. SPACING SCALE – 4px base system
+  ========================================================================== */
+  --bt-space-xxs: 0.125rem;   /* 2px  */
+  --bt-space-xs:  0.25rem;    /* 4px  */
+  --bt-space-sm:  0.5rem;     /* 8px  */
+  --bt-space-md:  1rem;       /* 16px */
+  --bt-space-lg:  1.5rem;     /* 24px */
+  --bt-space-xl:  2rem;       /* 32px */
+  --bt-space-2xl: 3rem;       /* 48px */
+  --bt-space-3xl: 4rem;       /* 64px */
+  --bt-space-4xl: 6rem;       /* 96px */
+  --bt-space-5xl: 8rem;       /* 128px */
+
+  /* ==========================================================================
+     9. BORDER RADIUS SCALE
+  ========================================================================== */
+  --bt-radius-sm: 0.375rem;   /* 6px  */
+  --bt-radius-md: 0.5rem;     /* 8px  */
+  --bt-radius-lg: 0.75rem;    /* 12px */
+  --bt-radius-xl: 1rem;       /* 16px */
+  --bt-radius-2xl: 1.5rem;    /* 24px */
+  --bt-radius-pill: 9999px;
+
+  /* ==========================================================================
+     10. SHADOW SYSTEM
+  ========================================================================== */
+  --bt-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --bt-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --bt-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --bt-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --bt-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --bt-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+
+  /* ==========================================================================
+     11. Z-INDEX LAYERING SYSTEM
+  ========================================================================== */
+  --bt-z-base: 0;
+  --bt-z-dropdown: 10;
+  --bt-z-sticky: 100;
+  --bt-z-modal: 1000;
+  --bt-z-overlay: 1100;
+  --bt-z-toast: 1200;
+  --bt-z-max: 9999;
+
+  /* ==========================================================================
+     12. LAYOUT & SIZING CONSTANTS
+  ========================================================================== */
+  --bt-sidebar-width: 280px;
+  --bt-sidebar-collapsed-width: 80px;
+  --bt-header-height: 64px;
+  --bt-card-padding: var(--bt-space-lg);
+  --bt-container-max: 1440px;
+  --bt-content-max: 1280px;
+
+  /* ==========================================================================
+     13. TYPOGRAPHY TOKENS
+  ========================================================================== */
+  --bt-font-family-primary: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --bt-font-family-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  --bt-font-size-xs:   0.75rem;    /* 12px */
+  --bt-font-size-sm:   0.875rem;   /* 14px */
+  --bt-font-size-md:   1rem;       /* 16px */
+  --bt-font-size-lg:   1.125rem;   /* 18px */
+  --bt-font-size-xl:   1.25rem;    /* 20px */
+  --bt-font-size-2xl:  1.5rem;     /* 24px */
+  --bt-font-size-3xl:  1.875rem;   /* 30px */
+  --bt-font-size-4xl:  2.25rem;    /* 36px */
+  --bt-font-size-5xl:  3rem;       /* 48px */
+
+  --bt-font-weight-normal: 400;
+  --bt-font-weight-medium: 500;
+  --bt-font-weight-semibold: 600;
+  --bt-font-weight-bold: 700;
+
+  /* ==========================================================================
+     14. ANIMATION TIMING TOKENS
+  ========================================================================== */
+  --bt-animation-xslow: 600ms;
+  --bt-animation-slow:  400ms;
+  --bt-animation-medium: 300ms;
+  --bt-animation-fast:  200ms;
+  --bt-animation-instant: 120ms;
+
+  --bt-easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --bt-easing-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --bt-easing-accelerate: cubic-bezier(0.4, 0, 1, 1);
+
+  /* ==========================================================================
+     15. CHART & DATA VISUALIZATION PALETTE
+  ========================================================================== */
+  --bt-chart-primary: var(--bt-color-primary);
+  --bt-chart-secondary: var(--bt-color-accent);
+  --bt-chart-tertiary: #8b5cf6;
+  --bt-chart-quaternary: #10b981;
+  --bt-chart-warning: var(--bt-color-warning);
+  --bt-chart-danger: var(--bt-color-danger);
+  --bt-chart-neutral: #64748b;
+
+  /* Progress / gradient helpers */
+  --bt-progress-gradient-success: linear-gradient(90deg, #059669, #10b981);
+  --bt-progress-gradient-warning: linear-gradient(90deg, #d97706, #f59e0b);
+  --bt-progress-gradient-danger:  linear-gradient(90deg, #dc2626, #ef4444);
+
+  /* ==========================================================================
+     16. ALERT & NOTIFICATION TOKENS
+  ========================================================================== */
+  --bt-alert-success-bg: rgba(16, 185, 129, 0.12);
+  --bt-alert-success-border: rgba(16, 185, 129, 0.3);
+  --bt-alert-warning-bg: rgba(245, 158, 11, 0.12);
+  --bt-alert-warning-border: rgba(245, 158, 11, 0.3);
+  --bt-alert-danger-bg: rgba(239, 68, 68, 0.12);
+  --bt-alert-danger-border: rgba(239, 68, 68, 0.3);
+
+  /* ==========================================================================
+     17. SCROLLBAR & MISC UI TOKENS
+  ========================================================================== */
+  --bt-scrollbar-track: #1e293b;
+  --bt-scrollbar-thumb: #475569;
+  --bt-scrollbar-thumb-hover: #64748b;
+
+  --bt-modal-overlay: rgba(0, 0, 0, 0.7);
+  --bt-backdrop-blur: blur(8px);
+
+  /* Thought ticker specific */
+  --bt-thought-ticker-bg: rgba(30, 41, 59, 0.6);
+  --bt-thought-ticker-text: #e2e8f0;
+}

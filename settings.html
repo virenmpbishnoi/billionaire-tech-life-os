@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="default">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="System Settings – Adaptive Life OS"/>
+  <title>Settings – Adaptive Life OS</title>
+
+  <!-- Favicon & Meta -->
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon"/>
+  <meta name="theme-color" content="#0f172a"/>
+
+  <!-- CSS Loading Order – Critical: Do NOT change -->
+  <link rel="stylesheet" href="assets/css/01-variables.css"/>
+  <link rel="stylesheet" href="assets/css/02-base.css"/>
+  <link rel="stylesheet" href="assets/css/03-layout.css"/>
+  <link rel="stylesheet" href="assets/css/04-components.css"/>
+  <link rel="stylesheet" href="assets/css/05-animations.css"/>
+  <link rel="stylesheet" href="assets/css/06-responsive.css"/>
+  <link rel="stylesheet" href="assets/css/07-themes.css"/>
+
+  <style>
+    /* Minimal inline critical CSS for fast first paint */
+    body {
+      margin: 0;
+      font-family: var(--bt-font-family-primary);
+      background: var(--bt-color-bg-main);
+      color: var(--bt-color-text-primary);
+      min-height: 100vh;
+    }
+    .settings-container {
+      max-width: var(--bt-container-max);
+      margin: 0 auto;
+      padding: var(--bt-space-xl);
+    }
+    .settings-header {
+      text-align: center;
+      margin-bottom: var(--bt-space-2xl);
+    }
+    .settings-section {
+      background: var(--bt-color-bg-card);
+      border-radius: var(--bt-radius-lg);
+      padding: var(--bt-space-xl);
+      margin-bottom: var(--bt-space-2xl);
+      border: 1px solid var(--bt-color-border);
+      box-shadow: var(--bt-shadow-md);
+    }
+    .section-title {
+      margin-bottom: var(--bt-space-lg);
+      font-size: var(--bt-font-size-2xl);
+      font-weight: var(--bt-font-weight-semibold);
+    }
+    .form-group {
+      margin-bottom: var(--bt-space-lg);
+    }
+    .form-label {
+      display: block;
+      margin-bottom: var(--bt-space-xs);
+      font-weight: var(--bt-font-weight-medium);
+    }
+    .input, .select {
+      width: 100%;
+      padding: var(--bt-space-sm) var(--bt-space-md);
+      border: 1px solid var(--bt-color-border);
+      border-radius: var(--bt-radius-md);
+      background: var(--bt-color-bg-surface);
+      color: var(--bt-color-text-primary);
+      font-size: var(--bt-font-size-md);
+    }
+    .btn {
+      padding: var(--bt-space-sm) var(--bt-space-lg);
+      border-radius: var(--bt-radius-md);
+      font-weight: var(--bt-font-weight-medium);
+      cursor: pointer;
+    }
+    .btn-danger {
+      background: var(--bt-color-danger);
+      color: white;
+      border: none;
+    }
+    .status-ok { color: var(--bt-color-success); }
+    .status-warning { color: var(--bt-color-warning); }
+    .status-critical { color: var(--bt-color-danger); }
+  </style>
+</head>
+<body>
+
+  <!-- Settings Container -->
+  <div class="settings-container">
+
+    <!-- Header -->
+    <header class="settings-header">
+      <h1>System Settings</h1>
+      <p>Manage your Adaptive Life OS configuration</p>
+      <p>Version: <span id="system-version">Loading...</span></p>
+    </header>
+
+    <!-- Account Settings -->
+    <section id="account-settings" class="settings-section">
+      <h2 class="section-title">Account</h2>
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <div id="username-display" class="input">Loading...</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">User ID</label>
+        <div id="userid-display" class="input">Loading...</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Account Created</label>
+        <div id="created-display" class="input">Loading...</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Last Login</label>
+        <div id="last-login-display" class="input">Loading...</div>
+      </div>
+    </section>
+
+    <!-- Theme Settings -->
+    <section id="theme-settings" class="settings-section">
+      <h2 class="section-title">Theme & Appearance</h2>
+      <div class="form-group">
+        <label class="form-label">Theme Mode</label>
+        <select id="theme-selector" class="select">
+          <option value="default">Default</option>
+          <option value="dark">Dark</option>
+          <option value="light">Light</option>
+          <option value="system">System</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Rank Theme Accent</label>
+        <div id="rank-accent-preview" style="height: 40px; border-radius: var(--bt-radius-md); background: var(--bt-color-primary); margin-top: var(--bt-space-sm);"></div>
+      </div>
+    </section>
+
+    <!-- System Health -->
+    <section id="system-health-panel" class="settings-section">
+      <h2 class="section-title">System Health</h2>
+      <div id="health-status"></div>
+      <div id="health-details" style="margin-top: var(--bt-space-lg);"></div>
+      <button id="run-health-check" class="btn">Run Health Check</button>
+    </section>
+
+    <!-- Migration Diagnostics -->
+    <section id="migration-panel" class="settings-section">
+      <h2 class="section-title">Migration & Version Diagnostics</h2>
+      <div id="migration-info"></div>
+      <div id="migration-history" style="margin-top: var(--bt-space-lg);"></div>
+    </section>
+
+    <!-- Storage Usage -->
+    <section id="storage-panel" class="settings-section">
+      <h2 class="section-title">Storage Usage</h2>
+      <div id="storage-stats"></div>
+      <button id="clear-cache" class="btn">Clear Cache</button>
+    </section>
+
+    <!-- Reset Controls -->
+    <section id="reset-panel" class="settings-section">
+      <h2 class="section-title">System Reset</h2>
+      <p class="text-danger">Warning: Reset operations are irreversible.</p>
+      <button id="reset-full" class="btn btn-danger">Full System Reset</button>
+      <button id="reset-recovery" class="btn btn-warning">Recovery Mode</button>
+    </section>
+
+  </div>
+
+  <!-- Modal Root -->
+  <div id="modal-root"></div>
+
+  <!-- JavaScript Loading Order – Minimal for settings page -->
+  <!-- Core -->
+  <script src="assets/js/core/08-storage.js"></script>
+  <script src="assets/js/core/09-state.js"></script>
+  <script src="assets/js/core/10-versioning.js"></script>
+  <script src="assets/js/core/11-eventbus.js"></script>
+
+  <!-- Auth (required for user data) -->
+  <script src="assets/js/auth/13-auth.guard.js"></script>
+  <script src="assets/js/auth/14-auth.session.js"></script>
+
+  <!-- Theme (required for theme settings) -->
+  <script src="assets/js/engine/31-theme.engine.js"></script>
+
+  <!-- Health & Migration & Reset -->
+  <script src="assets/js/core/45-system.health.js"></script>
+  <script src="assets/js/core/46-migration.manager.js"></script>
+  <script src="assets/js/core/47-reset.manager.js"></script>
+
+  <!-- Boot (will handle full system init if needed) -->
+  <script src="assets/js/core/43-boot.js"></script>
+
+  <!-- Settings-specific script -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Display system version
+      const versionEl = document.getElementById("system-version");
+      if (versionEl && window.Versioning) {
+        versionEl.textContent = Versioning.getAppVersion?.() || "1.0.0";
+      }
+
+      // Account info
+      const user = UserEngine?.getCurrentUser?.();
+      if (user) {
+        document.getElementById("username-display").textContent = user.username || "Unknown";
+        document.getElementById("userid-display").textContent = user.userId;
+        document.getElementById("created-display").textContent = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "Unknown";
+        document.getElementById("last-login-display").textContent = user.lastLogin ? new Date(user.lastLogin).toLocaleString() : "Unknown";
+      }
+
+      // Theme selector
+      const themeSelect = document.getElementById("theme-selector");
+      if (themeSelect) {
+        themeSelect.value = ThemeEngine?.getActiveTheme?.()?.active || "default";
+        themeSelect.addEventListener("change", (e) => {
+          ThemeEngine?.applyUserThemePreference?.(e.target.value);
+        });
+      }
+
+      // Health check button
+      document.getElementById("run-health-check")?.addEventListener("click", () => {
+        SystemHealth?.forceCheck?.();
+      });
+
+      // Reset buttons (with confirmation)
+      document.getElementById("reset-full")?.addEventListener("click", () => {
+        if (confirm("Type RESET to confirm full system reset:\n\nRESET")) {
+          ResetManager?.startReset?.('full');
+        }
+      });
+
+      document.getElementById("reset-recovery")?.addEventListener("click", () => {
+        if (confirm("Enter recovery mode? This will attempt to repair system state.")) {
+          ResetManager?.startReset?.('recovery');
+        }
+      });
+
+      // Storage stats
+      function updateStorageStats() {
+        const usage = Storage?.getStorageSize?.() || 0;
+        document.getElementById("storage-stats").innerHTML = `
+          <p>Current usage: ${(usage / 1024 / 1024).toFixed(2)} MB</p>
+          <p>Items stored: ${localStorage.length}</p>
+        `;
+      }
+      updateStorageStats();
+      document.getElementById("clear-cache")?.addEventListener("click", () => {
+        if (confirm("Clear component cache?")) {
+          ComponentLoader?.invalidateCache?.();
+          updateStorageStats();
+        }
+      });
+
+      // Migration info
+      function updateMigrationInfo() {
+        const info = document.getElementById("migration-info");
+        if (!info) return;
+
+        const stored = Versioning?.getStoredVersion?.() || {};
+        info.innerHTML = `
+          <p>Current App Version: ${Versioning?.getAppVersion?.() || '1.0.0'}</p>
+          <p>Current Schema Version: ${Versioning?.getSchemaVersion?.() || '1.0.0'}</p>
+          <p>Stored Schema Version: ${stored.schemaVersion || 'Unknown'}</p>
+          <p>Last Migration: ${stored.lastMigration ? new Date(stored.lastMigration).toLocaleString() : 'Never'}</p>
+        `;
+      }
+      updateMigrationInfo();
+
+      // Listen for migration complete
+      EventBus.on("MIGRATION_COMPLETE", updateMigrationInfo);
+    });
+  </script>
+
+</body>
+</html>

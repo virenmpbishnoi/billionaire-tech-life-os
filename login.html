@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="default">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Sign in to Billionaire Tech – Adaptive Life OS"/>
+  <title>Sign In – Adaptive Life OS</title>
+
+  <!-- Favicon & Meta -->
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon"/>
+  <meta name="theme-color" content="#0f172a"/>
+
+  <!-- CSS Loading Order – Critical: Do NOT change -->
+  <link rel="stylesheet" href="assets/css/01-variables.css"/>
+  <link rel="stylesheet" href="assets/css/02-base.css"/>
+  <link rel="stylesheet" href="assets/css/03-layout.css"/>
+  <link rel="stylesheet" href="assets/css/04-components.css"/>
+  <link rel="stylesheet" href="assets/css/05-animations.css"/>
+  <link rel="stylesheet" href="assets/css/06-responsive.css"/>
+  <link rel="stylesheet" href="assets/css/07-themes.css"/>
+
+  <style>
+    /* Minimal inline critical CSS for login page loading state */
+    body { 
+      margin: 0;
+      font-family: var(--bt-font-family-primary);
+      background: var(--bt-color-bg-main);
+      color: var(--bt-color-text-primary);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-container {
+      width: 100%;
+      max-width: 420px;
+      padding: var(--bt-space-2xl);
+    }
+    .login-card {
+      background: var(--bt-color-bg-card);
+      border-radius: var(--bt-radius-xl);
+      padding: var(--bt-space-2xl);
+      box-shadow: var(--bt-shadow-xl);
+      border: 1px solid var(--bt-color-border);
+    }
+    .login-logo {
+      text-align: center;
+      margin-bottom: var(--bt-space-xl);
+      font-size: var(--bt-font-size-3xl);
+      font-weight: var(--bt-font-weight-bold);
+      color: var(--bt-color-primary);
+    }
+    .login-title {
+      text-align: center;
+      margin-bottom: var(--bt-space-sm);
+    }
+    .login-subtitle {
+      text-align: center;
+      color: var(--bt-color-text-secondary);
+      margin-bottom: var(--bt-space-2xl);
+    }
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--bt-space-lg);
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--bt-space-xs);
+    }
+    .form-label {
+      font-weight: var(--bt-font-weight-medium);
+      color: var(--bt-color-text-secondary);
+    }
+    .input {
+      padding: var(--bt-space-sm) var(--bt-space-md);
+      border: 1px solid var(--bt-color-border);
+      border-radius: var(--bt-radius-md);
+      background: var(--bt-color-bg-surface);
+      color: var(--bt-color-text-primary);
+      font-size: var(--bt-font-size-md);
+    }
+    .btn-primary {
+      background: var(--bt-color-primary);
+      color: white;
+      padding: var(--bt-space-md) var(--bt-space-xl);
+      border-radius: var(--bt-radius-md);
+      font-weight: var(--bt-font-weight-semibold);
+      cursor: pointer;
+      transition: all var(--bt-animation-fast);
+    }
+    .btn-primary:hover {
+      background: var(--bt-color-primary-dark);
+    }
+    .error-message {
+      color: var(--bt-color-danger);
+      font-size: var(--bt-font-size-sm);
+      margin-top: var(--bt-space-xs);
+    }
+    .loading-state {
+      text-align: center;
+      padding: var(--bt-space-3xl);
+      color: var(--bt-color-text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Login Container -->
+  <div class="login-container">
+    <div class="login-card">
+      <!-- Logo & Branding -->
+      <div class="login-logo">Billionaire Tech</div>
+      <h1 class="login-title">Adaptive Life OS</h1>
+      <p class="login-subtitle">Control your execution. Build your empire.</p>
+
+      <!-- Login Form -->
+      <form id="login-form" class="login-form">
+        <div class="form-group">
+          <label class="form-label" for="username">Username</label>
+          <input 
+            id="username" 
+            type="text" 
+            class="input" 
+            placeholder="Enter username" 
+            required 
+            autocomplete="username"
+            autofocus
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <input 
+            id="password" 
+            type="password" 
+            class="input" 
+            placeholder="Enter password" 
+            required 
+            autocomplete="current-password"
+          />
+        </div>
+
+        <!-- Error Display -->
+        <div id="login-error-panel" class="error-message"></div>
+
+        <!-- Submit Button -->
+        <button 
+          type="submit" 
+          id="login-submit" 
+          class="btn btn-primary"
+        >
+          Sign In
+        </button>
+      </form>
+
+      <!-- Footer Links -->
+      <div id="login-footer" style="margin-top: var(--bt-space-xl); text-align: center; font-size: var(--bt-font-size-sm); color: var(--bt-color-text-muted);">
+        <p>Version <span id="system-version">Loading...</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State (shown before boot completes) -->
+  <div id="boot-loading" class="loading-state" style="position: fixed; inset: 0; background: var(--bt-color-bg-main); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999;">
+    <div class="spinner" style="width: 48px; height: 48px; border: 4px solid var(--bt-color-border); border-top: 4px solid var(--bt-color-primary); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+    <p style="margin-top: var(--bt-space-lg);">Initializing Adaptive Life OS...</p>
+  </div>
+
+  <!-- JavaScript Loading Order – Critical: Do NOT change -->
+  <!-- Core Infrastructure -->
+  <script src="assets/js/core/08-storage.js"></script>
+  <script src="assets/js/core/09-state.js"></script>
+  <script src="assets/js/core/10-versioning.js"></script>
+  <script src="assets/js/core/11-eventbus.js"></script>
+
+  <!-- Auth Layer (minimal for login) -->
+  <script src="assets/js/auth/13-auth.guard.js"></script>
+  <script src="assets/js/auth/14-auth.session.js"></script>
+  <script src="assets/js/auth/15-auth.crypto.js"></script>
+
+  <!-- Router (minimal for redirect after login) -->
+  <script src="assets/js/ui/32-router.js"></script>
+
+  <!-- Boot (will handle full system init) -->
+  <script src="assets/js/core/43-boot.js"></script>
+
+  <!-- Login-specific script -->
+  <script>
+    // Display system version when versioning loads
+    document.addEventListener("DOMContentLoaded", function () {
+      const versionEl = document.getElementById("system-version");
+      if (versionEl && window.Versioning) {
+        versionEl.textContent = Versioning.getAppVersion?.() || "1.0.0";
+      }
+
+      // Login form handler
+      const form = document.getElementById("login-form");
+      const errorPanel = document.getElementById("login-error-panel");
+      const submitBtn = document.getElementById("login-submit");
+
+      if (form) {
+        form.addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const username = document.getElementById("username")?.value?.trim();
+          const password = document.getElementById("password")?.value;
+
+          if (!username || !password) {
+            errorPanel.textContent = "Please enter username and password";
+            return;
+          }
+
+          errorPanel.textContent = "";
+          submitBtn.disabled = true;
+          submitBtn.textContent = "Signing in...";
+
+          try {
+            // Trigger session creation (minimal auth flow for login page)
+            const session = await AuthSession.createSession(username, { password });
+
+            if (session) {
+              // Success – redirect to dashboard
+              Router.navigate("/dashboard", { replace: true });
+            } else {
+              errorPanel.textContent = "Authentication failed";
+            }
+          } catch (err) {
+            errorPanel.textContent = err.message || "Login failed – please try again";
+            console.error("[Login] Auth error:", err);
+          } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Sign In";
+          }
+        });
+      }
+
+      // Hide loading state when boot completes
+      EventBus.on("BOOT_COMPLETE", () => {
+        const loading = document.getElementById("boot-loading");
+        if (loading) loading.style.display = "none";
+      });
+    });
+  </script>
+
+</body>
+</html>

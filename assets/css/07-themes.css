@@ -1,0 +1,253 @@
+/*
+ * 07-themes.css
+ * Theme & Appearance Override Layer – Billionaire Tech Adaptive Life OS
+ *
+ * Final layer: pure variable overrides for different visual modes and rank states.
+ * Loaded LAST — overrides cascade from 01-variables.css downward.
+ *
+ * Switching mechanism: data-theme="..." or data-lockdown="true" on <html> or <body>
+ * All changes are variable-based → zero structural impact
+ *
+ * Version: 1.0.0 – March 2026
+ */
+
+/* ==========================================================================
+   GLOBAL THEME TRANSITION SMOOTHNESS
+   Applied to html or body when theme changes
+========================================================================== */
+
+:root,
+[data-theme] {
+  transition:
+    background-color var(--bt-animation-medium) var(--bt-easing-standard),
+    color var(--bt-animation-medium) var(--bt-easing-standard),
+    border-color var(--bt-animation-medium) var(--bt-easing-standard),
+    box-shadow var(--bt-animation-fast) var(--bt-easing-standard);
+}
+
+/* ==========================================================================
+   SECTION 1 — DEFAULT THEME
+   (fallback / light-leaning balanced mode)
+========================================================================== */
+
+[data-theme="default"] {
+  /* Already close to root defaults – mostly explicit for clarity & future extension */
+
+  --bt-color-bg-main:       #0f172a;
+  --bt-color-bg-card:       #1e293b;
+  --bt-color-bg-sidebar:    #111827;
+  --bt-color-bg-modal:      rgba(15, 23, 42, 0.94);
+
+  --bt-color-text-primary:  #f1f5f9;
+  --bt-color-text-secondary:#cbd5e1;
+  --bt-color-text-muted:    #94a3b8;
+
+  --bt-color-primary:       #3b82f6;
+  --bt-color-accent:        #ec4899;
+  --bt-color-success:       #10b981;
+  --bt-color-warning:       #f59e0b;
+  --bt-color-danger:        #ef4444;
+
+  --bt-thought-ticker-bg:   rgba(30, 41, 59, 0.6);
+  --bt-thought-ticker-text: #e2e8f0;
+}
+
+/* ==========================================================================
+   SECTION 2 — DARK THEME
+   True dark mode – deeper blacks, higher contrast text
+========================================================================== */
+
+[data-theme="dark"] {
+  --bt-color-bg-main:       #020617;           /* slate-950 → near black */
+  --bt-color-bg-card:       #0f172a;
+  --bt-color-bg-sidebar:    #020617;
+  --bt-color-bg-modal:      rgba(2, 6, 23, 0.96);
+
+  --bt-color-bg-surface:    #1e293b;
+  --bt-color-bg-hover:      rgba(59, 130, 246, 0.10);
+  --bt-color-bg-active:     rgba(59, 130, 246, 0.18);
+
+  --bt-color-border:        #334155;
+  --bt-color-border-soft:   #475569;
+
+  --bt-color-text-primary:  #f8fafc;
+  --bt-color-text-secondary:#e2e8f0;
+  --bt-color-text-muted:    #94a3b8;
+
+  --bt-scrollbar-track:     #020617;
+  --bt-scrollbar-thumb:     #475569;
+  --bt-scrollbar-thumb-hover: #64748b;
+
+  --bt-modal-overlay:       rgba(0, 0, 0, 0.85);
+}
+
+/* ==========================================================================
+   SECTION 3 — ELITE RANK THEME
+   Gold + premium blue accents – unlocked at Elite rank
+========================================================================== */
+
+[data-theme="elite"] {
+  --bt-color-primary:       #d97706;           /* amber-600 – gold shift */
+  --bt-color-primary-light: #fbbf24;
+  --bt-color-primary-dark:  #b45309;
+
+  --bt-color-accent:        #eab308;           /* yellow-500 */
+  --bt-color-success:       #84cc16;           /* lime-500 */
+
+  --bt-color-bg-hover:      rgba(234, 179, 8, 0.12);
+  --bt-color-bg-active:     rgba(234, 179, 8, 0.20);
+
+  --bt-progress-gradient-success: linear-gradient(90deg, #84cc16, #a3e635);
+  --bt-chart-primary:       #d97706;
+  --bt-chart-secondary:     #eab308;
+}
+
+/* ==========================================================================
+   SECTION 4 — GRANDMASTER RANK THEME
+   Deep luxury – black + gold + subtle purple accents
+   Maximum prestige appearance
+========================================================================== */
+
+[data-theme="grandmaster"] {
+  --bt-color-bg-main:       #0a0e1a;
+  --bt-color-bg-card:       #131a2e;
+  --bt-color-bg-sidebar:    #0a0e1a;
+  --bt-color-bg-modal:      rgba(10, 14, 26, 0.96);
+
+  --bt-color-primary:       #ca8a04;           /* yellow-700 deep gold */
+  --bt-color-primary-light: #eab308;
+  --bt-color-primary-dark:  #a16207;
+
+  --bt-color-accent:        #a855f7;           /* purple-500 luxury */
+  --bt-color-accent-light:  #c084fc;
+  --bt-color-accent-dark:   #9333ea;
+
+  --bt-color-success:       #65a30d;
+
+  --bt-color-text-primary:  #fefce8;           /* very light cream-gold */
+  --bt-color-text-secondary:#fde68a;
+  --bt-color-text-muted:    #d4d4d8;
+
+  --bt-badge-tier-5:        #ca8a04;
+  --bt-badge-tier-5-glow:   rgba(202, 138, 4, 0.6);
+
+  --bt-progress-gradient-success: linear-gradient(90deg, #a16207, #ca8a04);
+}
+
+/* ==========================================================================
+   SECTION 5 — LOCKDOWN MODE OVERRIDE
+   Highest priority – red danger aesthetic, reduced saturation
+   Overrides EVERY other theme when active
+========================================================================== */
+
+[data-lockdown="true"] {
+  --bt-color-bg-main:       #110c0d !important;
+  --bt-color-bg-card:       #1a0f10 !important;
+  --bt-color-bg-sidebar:    #0f0506 !important;
+  --bt-color-bg-modal:      rgba(17, 12, 13, 0.96) !important;
+
+  --bt-color-primary:       #f87171 !important;
+  --bt-color-accent:        #fca5a5 !important;
+  --bt-color-success:       #fca5a5 !important;
+  --bt-color-warning:       #fbbf24 !important;
+  --bt-color-danger:        #ef4444 !important;
+
+  --bt-color-text-primary:  #fee2e2 !important;
+  --bt-color-text-secondary:#fecaca !important;
+  --bt-color-text-muted:    #fca5a5 !important;
+
+  --bt-color-border:        #7f1d1d !important;
+  --bt-color-border-soft:   #991b1b !important;
+
+  --bt-lockdown-bg:         #110c0d !important;
+  --bt-lockdown-border:     #ef4444 !important;
+  --bt-lockdown-text:       #fee2e2 !important;
+  --bt-lockdown-banner:     #7f1d1d !important;
+
+  --bt-risk-low:            #fca5a5 !important;
+  --bt-risk-medium:         #f87171 !important;
+  --bt-risk-high:           #ef4444 !important;
+  --bt-risk-critical:       #b91c1c !important;
+
+  --bt-thought-ticker-bg:   rgba(127, 29, 29, 0.4) !important;
+  --bt-thought-ticker-text: #fee2e2 !important;
+
+  /* Force disable decorative gradients */
+  --bt-progress-gradient-success: linear-gradient(90deg, #ef4444, #f87171) !important;
+}
+
+/* ==========================================================================
+   SECTION 6 — ADMIN OVERRIDE THEME
+   High-visibility neutral palette for admin oversight
+========================================================================== */
+
+[data-theme="admin"] {
+  --bt-color-bg-main:       #0f172a;
+  --bt-color-bg-card:       #1e293b;
+  --bt-color-bg-surface:    #334155;
+
+  --bt-color-primary:       #64748b;           /* slate-500 – neutral */
+  --bt-color-accent:        #94a3b8;
+
+  --bt-color-text-primary:  #f1f5f9;
+  --bt-color-text-secondary:#cbd5e1;
+
+  --bt-color-success:       #6ee7b7;
+  --bt-color-warning:       #fcd34d;
+  --bt-color-danger:        #f87171;
+
+  --bt-chart-primary:       #64748b;
+  --bt-chart-secondary:     #94a3b8;
+}
+
+/* ==========================================================================
+   SECTION 7 — CHART COLOR ADAPTATIONS
+========================================================================== */
+
+[data-theme="dark"] .chart-wrapper,
+[data-theme="elite"] .chart-wrapper,
+[data-theme="grandmaster"] .chart-wrapper {
+  --bt-chart-grid:          rgba(148, 163, 184, 0.12);
+  --bt-chart-axis:          #64748b;
+  --bt-chart-text:          #cbd5e1;
+}
+
+[data-lockdown="true"] .chart-wrapper {
+  --bt-chart-grid:          rgba(239, 68, 68, 0.15);
+  --bt-chart-axis:          #fca5a5;
+  --bt-chart-text:          #fee2e2;
+}
+
+/* ==========================================================================
+   SECTION 8 — BADGE VISIBILITY GUARANTEES
+========================================================================== */
+
+[data-theme="dark"] .badge-tier-2,
+[data-theme="elite"] .badge-tier-2,
+[data-theme="grandmaster"] .badge-tier-2 {
+  color: #0f172a !important;
+}
+
+[data-lockdown="true"] .badge {
+  filter: brightness(1.15);
+}
+
+/* ==========================================================================
+   SECTION 9 — RISK & MANIFESTATION CARD READABILITY
+========================================================================== */
+
+[data-theme="dark"] .risk-banner,
+[data-theme="elite"] .risk-banner,
+[data-theme="grandmaster"] .risk-banner {
+  color: white !important;
+}
+
+[data-theme="dark"] .manifest-card,
+[data-theme="grandmaster"] .manifest-card {
+  --bt-color-text-primary: #fefce8;
+}
+
+[data-lockdown="true"] .manifest-card {
+  opacity: 0.92;
+  filter: grayscale(0.3);
+}

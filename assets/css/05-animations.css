@@ -1,0 +1,282 @@
+/*
+ * 05-animations.css
+ * Motion & Micro-interaction System – Billionaire Tech Adaptive Life OS
+ *
+ * Defines all animated behaviors, transitions and keyframes.
+ * Loaded after components.css — applies motion on top of existing styles.
+ *
+ * Philosophy: Subtle, performant, professional SaaS-grade feedback
+ *             Hardware-accelerated properties only (transform, opacity)
+ *             Full prefers-reduced-motion support
+ *
+ * Version: 1.0.0 – March 2026
+ */
+
+/* ==========================================================================
+   GLOBAL MOTION SAFEGUARD
+   Respect user preference for reduced motion
+========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    animation-play-state: paused !important;
+  }
+}
+
+/* ==========================================================================
+   1. FADE ANIMATIONS
+========================================================================== */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+.fade-in {
+  animation: fadeIn var(--bt-animation-medium) var(--bt-easing-decelerate) forwards;
+}
+
+.fade-in-fast {
+  animation: fadeIn var(--bt-animation-fast) var(--bt-easing-standard) forwards;
+}
+
+.fade-in-slow {
+  animation: fadeIn var(--bt-animation-slow) var(--bt-easing-decelerate) forwards;
+}
+
+.fade-out {
+  animation: fadeOut var(--bt-animation-medium) var(--bt-easing-accelerate) forwards;
+}
+
+/* ==========================================================================
+   2. SLIDE ENTRANCE ANIMATIONS
+========================================================================== */
+
+@keyframes slideInLeft {
+  from { transform: translateX(-20px); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(20px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes slideInDown {
+  from { transform: translateY(-20px); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+
+.slide-in-left  { animation: slideInLeft  var(--bt-animation-medium) var(--bt-easing-decelerate) forwards; }
+.slide-in-right { animation: slideInRight var(--bt-animation-medium) var(--bt-easing-decelerate) forwards; }
+.slide-in-up    { animation: slideInUp    var(--bt-animation-medium) var(--bt-easing-decelerate) forwards; }
+.slide-in-down  { animation: slideInDown  var(--bt-animation-medium) var(--bt-easing-decelerate) forwards; }
+
+/* ==========================================================================
+   3. PROGRESS / FILL ANIMATIONS
+========================================================================== */
+
+@keyframes progressFill {
+  from { width: 0%; }
+  to   { width: var(--progress-target-width, 100%); }
+}
+
+.progress-animate .progress-fill {
+  animation: progressFill var(--bt-animation-slow) var(--bt-easing-decelerate) forwards;
+  will-change: width;
+}
+
+/* ==========================================================================
+   4. BADGE UNLOCK ANIMATION
+========================================================================== */
+
+@keyframes badgePop {
+  0%   { transform: scale(0.6);  opacity: 0; }
+  50%  { transform: scale(1.15); opacity: 1; }
+  70%  { transform: scale(0.95); }
+  100% { transform: scale(1);    }
+}
+
+.badge-unlock {
+  animation: badgePop var(--bt-animation-slow) var(--bt-easing-standard) forwards;
+  will-change: transform, opacity;
+}
+
+/* ==========================================================================
+   5. RANK UP / LEVEL GLOW
+========================================================================== */
+
+@keyframes rankGlow {
+  0%   { transform: scale(1);    box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.7); }
+  40%  { transform: scale(1.08); box-shadow: 0 0 30px 10px rgba(236, 72, 153, 0); }
+  70%  { transform: scale(1.03); box-shadow: 0 0 15px 5px rgba(236, 72, 153, 0); }
+  100% { transform: scale(1);    box-shadow: 0 0 0 0 rgba(236, 72, 153, 0); }
+}
+
+.rank-up {
+  animation: rankGlow var(--bt-animation-slow) var(--bt-easing-standard) forwards;
+  will-change: transform, box-shadow;
+}
+
+/* ==========================================================================
+   6. XP GAIN / SCORE POP
+========================================================================== */
+
+@keyframes xpFlash {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.4; transform: scale(1.4); }
+}
+
+.xp-gain {
+  animation: xpFlash var(--bt-animation-fast) var(--bt-easing-standard);
+  color: var(--bt-color-success);
+  will-change: opacity, transform;
+}
+
+/* ==========================================================================
+   7. NOTIFICATION / TOAST APPEAR
+========================================================================== */
+
+@keyframes popIn {
+  0%   { transform: translateY(-20px) scale(0.95); opacity: 0; }
+  60%  { transform: translateY(4px) scale(1.02);   opacity: 1; }
+  100% { transform: translateY(0) scale(1);        opacity: 1; }
+}
+
+.notification-pop,
+.notification-show {
+  animation: popIn var(--bt-animation-medium) var(--bt-easing-decelerate) forwards;
+  will-change: transform, opacity;
+}
+
+/* ==========================================================================
+   8. RISK / ALERT PULSE
+========================================================================== */
+
+@keyframes riskPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  70%  { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+.risk-pulse,
+.risk-warning {
+  animation: riskPulse 2s var(--bt-easing-standard) infinite;
+  will-change: box-shadow;
+}
+
+/* ==========================================================================
+   9. LOCKDOWN SHAKE WARNING
+========================================================================== */
+
+@keyframes shakeWarning {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80%      { transform: translateX(4px); }
+}
+
+.lockdown-shake,
+.lockdown-alert {
+  animation: shakeWarning var(--bt-animation-slow) var(--bt-easing-standard);
+  will-change: transform;
+}
+
+/* ==========================================================================
+   10. THOUGHT TICKER CONTINUOUS SCROLL
+========================================================================== */
+
+@keyframes tickerMove {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.ticker-scroll {
+  display: inline-flex;
+  animation: tickerMove var(--bt-animation-xslow) linear infinite;
+  will-change: transform;
+}
+
+/* Make sure content is duplicated for seamless loop */
+.ticker-scroll.duplicate {
+  animation-duration: calc(var(--bt-animation-xslow) * 0.5);
+}
+
+/* ==========================================================================
+   11. MODAL OPEN / CLOSE
+========================================================================== */
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes modalFadeOut {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(0.94); }
+}
+
+.modal-open  { animation: modalFadeIn  var(--bt-animation-medium) var(--bt-easing-decelerate) forwards; }
+.modal-close { animation: modalFadeOut var(--bt-animation-medium) var(--bt-easing-accelerate) forwards; }
+
+/* ==========================================================================
+   12. HOVER MICRO-INTERACTIONS
+========================================================================== */
+
+.hover-lift {
+  transition: transform var(--bt-animation-fast) var(--bt-easing-standard);
+}
+
+.hover-lift:hover {
+  transform: translateY(-3px);
+}
+
+.hover-scale {
+  transition: transform var(--bt-animation-fast) var(--bt-easing-standard);
+}
+
+.hover-scale:hover {
+  transform: scale(1.04);
+}
+
+.hover-highlight {
+  transition: background var(--bt-animation-fast), color var(--bt-animation-fast);
+}
+
+.hover-highlight:hover {
+  background: var(--bt-color-bg-hover);
+}
+
+/* ==========================================================================
+   13. UTILITY TRANSITION HELPERS
+========================================================================== */
+
+.transition-all-fast {
+  transition: all var(--bt-animation-fast) var(--bt-easing-standard);
+}
+
+.transition-all-medium {
+  transition: all var(--bt-animation-medium) var(--bt-easing-standard);
+}
+
+.transition-opacity {
+  transition: opacity var(--bt-animation-medium) var(--bt-easing-standard);
+}
+
+.transition-transform {
+  transition: transform var(--bt-animation-fast) var(--bt-easing-standard);
+}

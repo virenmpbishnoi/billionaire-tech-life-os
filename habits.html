@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="default">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Habits – Adaptive Life OS"/>
+  <title>Habits – Adaptive Life OS</title>
+
+  <!-- Favicon & Meta -->
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon"/>
+  <meta name="theme-color" content="#0f172a"/>
+
+  <!-- CSS Loading Order – Critical: Do NOT change -->
+  <link rel="stylesheet" href="assets/css/01-variables.css"/>
+  <link rel="stylesheet" href="assets/css/02-base.css"/>
+  <link rel="stylesheet" href="assets/css/03-layout.css"/>
+  <link rel="stylesheet" href="assets/css/04-components.css"/>
+  <link rel="stylesheet" href="assets/css/05-animations.css"/>
+  <link rel="stylesheet" href="assets/css/06-responsive.css"/>
+  <link rel="stylesheet" href="assets/css/07-themes.css"/>
+
+  <style>
+    /* Minimal inline critical CSS for fast paint */
+    body {
+      margin: 0;
+      font-family: var(--bt-font-family-primary);
+      background: var(--bt-color-bg-main);
+      color: var(--bt-color-text-primary);
+      min-height: 100vh;
+    }
+    .habits-container {
+      max-width: var(--bt-container-max);
+      margin: 0 auto;
+      padding: var(--bt-space-xl);
+    }
+    .habits-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--bt-space-2xl);
+    }
+    .habit-controls {
+      display: flex;
+      gap: var(--bt-space-lg);
+      margin-bottom: var(--bt-space-xl);
+      flex-wrap: wrap;
+    }
+    .habit-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--bt-space-lg);
+      margin-bottom: var(--bt-space-2xl);
+    }
+    .habit-card {
+      background: var(--bt-color-bg-card);
+      border-radius: var(--bt-radius-lg);
+      padding: var(--bt-space-lg);
+      border: 1px solid var(--bt-color-border);
+      box-shadow: var(--bt-shadow-md);
+      text-align: center;
+    }
+    .habit-card-value {
+      font-size: var(--bt-font-size-3xl);
+      font-weight: var(--bt-font-weight-bold);
+      margin: var(--bt-space-sm) 0;
+    }
+    .habit-card-label {
+      color: var(--bt-color-text-secondary);
+    }
+    .habit-checklist {
+      background: var(--bt-color-bg-card);
+      border-radius: var(--bt-radius-lg);
+      border: 1px solid var(--bt-color-border);
+      overflow: hidden;
+    }
+    .habit-item {
+      padding: var(--bt-space-md) var(--bt-space-lg);
+      border-bottom: 1px solid var(--bt-color-border);
+      display: flex;
+      align-items: center;
+      gap: var(--bt-space-lg);
+    }
+    .habit-item:last-child {
+      border-bottom: none;
+    }
+    .habit-checkbox {
+      width: 20px;
+      height: 20px;
+    }
+    .habit-title {
+      flex: 1;
+      font-weight: var(--bt-font-weight-medium);
+    }
+    .habit-category {
+      padding: var(--bt-space-xs) var(--bt-space-sm);
+      border-radius: var(--bt-radius-sm);
+      font-size: var(--bt-font-size-xs);
+      font-weight: var(--bt-font-weight-medium);
+    }
+    .habit-streak {
+      font-weight: var(--bt-font-weight-semibold);
+      color: var(--bt-color-warning);
+    }
+    .loading-state {
+      text-align: center;
+      padding: var(--bt-space-3xl);
+      color: var(--bt-color-text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Habits Container -->
+  <div class="habits-container">
+
+    <!-- Header -->
+    <header class="habits-header">
+      <h1>Habits Dashboard</h1>
+      <div class="habit-stats">
+        <span>Daily Habits: <strong id="daily-habits">0</strong></span>
+        <span>Current Streak: <strong id="current-streak">0 days</strong></span>
+        <span>Discipline Index: <strong id="discipline-index">0</strong></span>
+      </div>
+    </header>
+
+    <!-- Controls -->
+    <section class="habit-controls">
+      <button id="create-habit-btn" class="btn btn-primary">+ New Habit</button>
+      <input type="text" id="habit-search" class="input" placeholder="Search habits..."/>
+      <select id="habit-filter" class="select">
+        <option value="all">All Habits</option>
+        <option value="today">Due Today</option>
+        <option value="active">Active</option>
+        <option value="completed-today">Completed Today</option>
+        <option value="missed">Missed Recently</option>
+      </select>
+      <select id="habit-category" class="select">
+        <option value="all">All Categories</option>
+        <!-- Categories populated dynamically if needed -->
+      </select>
+    </section>
+
+    <!-- Summary Cards -->
+    <section class="habit-summary">
+      <div class="habit-card">
+        <div class="habit-card-label">Total Habits</div>
+        <div id="total-habits" class="habit-card-value">0</div>
+      </div>
+      <div class="habit-card">
+        <div class="habit-card-label">Completed Today</div>
+        <div id="completed-today" class="habit-card-value">0</div>
+      </div>
+      <div class="habit-card">
+        <div class="habit-card-label">Active Streaks</div>
+        <div id="active-streaks" class="habit-card-value">0</div>
+      </div>
+      <div class="habit-card">
+        <div class="habit-card-label">Discipline Impact</div>
+        <div id="discipline-impact" class="habit-card-value">0%</div>
+      </div>
+    </section>
+
+    <!-- Habit Checklist -->
+    <section id="habit-checklist" class="habit-checklist">
+      <!-- Habits populated dynamically -->
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading habits...</p>
+      </div>
+    </section>
+
+    <!-- Habit Streaks -->
+    <section id="habit-streaks" class="analytics-section">
+      <h2>Active Streaks</h2>
+      <!-- Streak visualization -->
+    </section>
+
+    <!-- Habit Analytics -->
+    <section id="habit-analytics" class="analytics-section">
+      <h2>Habit Performance</h2>
+      <!-- Charts populated by charts.ui.js -->
+    </section>
+
+  </div>
+
+  <!-- Modal Root -->
+  <div id="modal-root"></div>
+
+  <!-- JavaScript Loading Order – Optimized for habits page -->
+  <!-- Core -->
+  <script src="assets/js/core/08-storage.js"></script>
+  <script src="assets/js/core/09-state.js"></script>
+  <script src="assets/js/core/10-versioning.js"></script>
+  <script src="assets/js/core/11-eventbus.js"></script>
+
+  <!-- Habit & Streak Engines (core for this page) -->
+  <script src="assets/js/engine/18-habit.engine.js"></script>
+  <script src="assets/js/engine/23-streak.engine.js"></script>
+  <script src="assets/js/engine/25-discipline.engine.js"></script>
+
+  <!-- UI & Router -->
+  <script src="assets/js/ui/32-router.js"></script>
+  <script src="assets/js/ui/33-view.manager.js"></script>
+  <script src="assets/js/ui/35-dashboard.ui.js"></script>
+  <script src="assets/js/ui/36-sidebar.ui.js"></script>
+  <script src="assets/js/ui/37-header.ui.js"></script>
+  <script src="assets/js/ui/38-alerts.ui.js"></script>
+  <script src="assets/js/ui/39-modals.ui.js"></script>
+  <script src="assets/js/ui/40-charts.ui.js"></script>
+
+  <!-- Boot -->
+  <script src="assets/js/core/43-boot.js"></script>
+
+  <!-- Habits-specific script -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Update habit summary
+      function updateHabitSummary() {
+        const stats = HabitEngine?.calculateHabitStats?.() || {};
+        document.getElementById("total-habits").textContent = stats.totalHabits || 0;
+        document.getElementById("completed-today").textContent = stats.completedToday || 0;
+        document.getElementById("active-streaks").textContent = stats.activeStreaks || 0;
+
+        const discipline = DisciplineEngine?.getDisciplineMetrics?.() || {};
+        document.getElementById("discipline-index").textContent = discipline.disciplineIndex || 0;
+      }
+
+      // Update streak display
+      function updateStreakDisplay() {
+        const streak = StreakEngine?.getStreakByType?.('habit') || { currentStreak: 0 };
+        document.getElementById("current-streak").textContent = `${streak.currentStreak || 0} days`;
+      }
+
+      // Render habit checklist
+      function renderHabitChecklist() {
+        const checklist = document.getElementById("habit-checklist");
+        if (!checklist) return;
+
+        const habits = HabitEngine?.getHabits?.() || [];
+        checklist.innerHTML = '';
+
+        if (habits.length === 0) {
+          checklist.innerHTML = '<div class="loading-state"><p>No habits yet. Build your first habit!</p></div>';
+          return;
+        }
+
+        habits.forEach(habit => {
+          const item = document.createElement('div');
+          item.className = `habit-item ${isHabitCompletedToday(habit) ? 'completed' : ''}`;
+          item.dataset.habitId = habit.habitId;
+
+          const categoryStyle = `background: var(${habit.categoryColor || '--bt-manifest-thought'}); color: white;`;
+
+          item.innerHTML = `
+            <input type="checkbox" class="habit-checkbox" ${isHabitCompletedToday(habit) ? 'checked' : ''} data-habit-id="${habit.habitId}"/>
+            <div class="habit-title">${habit.title}</div>
+            <div class="habit-category" style="${categoryStyle}">${habit.category || 'General'}</div>
+            <div class="habit-streak">Streak: ${habit.currentStreak || 0} days</div>
+            <button class="btn btn-small btn-danger delete-habit" data-habit-id="${habit.habitId}">Delete</button>
+          `;
+
+          // Checkbox completion
+          item.querySelector('.habit-checkbox').addEventListener('change', (e) => {
+            if (e.target.checked) {
+              HabitEngine?.completeHabit?.(habit.habitId);
+            }
+          });
+
+          // Delete button
+          item.querySelector('.delete-habit').addEventListener('click', () => {
+            if (confirm('Delete this habit?')) {
+              HabitEngine?.deleteHabit?.(habit.habitId);
+            }
+          });
+
+          checklist.appendChild(item);
+        });
+      }
+
+      function isHabitCompletedToday(habit) {
+        if (!habit.lastCompletedAt) return false;
+        const today = new Date().toISOString().split('T')[0];
+        const last = new Date(habit.lastCompletedAt).toISOString().split('T')[0];
+        return today === last;
+      }
+
+      // Event listeners
+      EventBus.on('HABIT_CREATED', () => {
+        renderHabitChecklist();
+        updateHabitSummary();
+      });
+
+      EventBus.on('HABIT_UPDATED', () => {
+        renderHabitChecklist();
+        updateHabitSummary();
+      });
+
+      EventBus.on('HABIT_COMPLETED', () => {
+        renderHabitChecklist();
+        updateHabitSummary();
+        updateStreakDisplay();
+      });
+
+      EventBus.on('HABIT_DELETED', () => {
+        renderHabitChecklist();
+        updateHabitSummary();
+      });
+
+      EventBus.on('STREAK_UPDATED', updateStreakDisplay);
+
+      // Create habit button
+      document.getElementById("create-habit-btn")?.addEventListener("click", () => {
+        ModalsUI?.open?.('addHabit');
+      });
+
+      // Initial render
+      updateHabitSummary();
+      updateStreakDisplay();
+      renderHabitChecklist();
+
+      // Hide loading when data ready
+      EventBus.on("BOOT_COMPLETE", () => {
+        document.querySelector(".loading-state")?.remove();
+      });
+    });
+  </script>
+
+</body>
+</html>

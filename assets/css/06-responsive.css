@@ -1,0 +1,348 @@
+/*
+ * 06-responsive.css
+ * Responsive Adaptation Layer – Billionaire Tech Adaptive Life OS
+ *
+ * Applies viewport-based adjustments to previously defined layout & components.
+ * Loaded after animations.css — final structural/behavioral polish before themes.
+ *
+ * Breakpoints (mobile-first ascending, but written descending for cascade clarity):
+ *   ≥1920px  → ultra-wide desktop
+ *   ≤1440px  → standard/large desktop
+ *   ≤1024px  → small desktop / tablet landscape
+ *   ≤768px   → tablet portrait / small landscape
+ *   ≤600px   → large phones / small tablets
+ *   ≤480px   → standard mobile phones
+ *
+ * Version: 1.0.0 – March 2026
+ */
+
+/* ==========================================================================
+   BASE RESPONSIVE SAFEGUARDS (applied globally)
+========================================================================== */
+
+html,
+body,
+.app-root,
+.app-main {
+  overflow-x: hidden;
+}
+
+img, video, canvas, iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+.chart-wrapper,
+.chart-body {
+  width: 100%;
+}
+
+/* ==========================================================================
+   SECTION 1 — Ultra-Wide Desktop (>1920px) – optional density increase
+========================================================================== */
+
+@media (min-width: 1921px) {
+  .content-max,
+  .admin-container,
+  .main-wrapper {
+    max-width: 1680px; /* slightly wider comfortable reading */
+  }
+
+  .dashboard-grid {
+    gap: var(--bt-space-xl);
+  }
+
+  .chart-wrapper {
+    height: 420px;
+  }
+}
+
+/* ==========================================================================
+   SECTION 2 — Standard / Large Desktop (≤1440px)
+========================================================================== */
+
+@media (max-width: 1440px) {
+  .dashboard-execution {
+    grid-column: 1 / -1;
+  }
+
+  .dashboard-analytics {
+    grid-column: 1 / -1;
+  }
+
+  .chart-wrapper {
+    grid-column: span 12 !important;
+    height: 360px;
+  }
+
+  .execution-primary,
+  .execution-secondary {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ==========================================================================
+   SECTION 3 — Small Desktop / Tablet Landscape (≤1024px)
+========================================================================== */
+
+@media (max-width: 1024px) {
+  .app-sidebar {
+    width: var(--bt-sidebar-collapsed-width);
+    transform: translateX(0);
+  }
+
+  .app-main {
+    margin-left: var(--bt-sidebar-collapsed-width);
+  }
+
+  .sidebar-label,
+  .sidebar-subtitle,
+  .ticker-controls span:not(.icon) {
+    display: none;
+  }
+
+  .sidebar-item,
+  .sidebar-section-header {
+    justify-content: center;
+  }
+
+  .dashboard-grid,
+  .analytics-container,
+  .execution-panel,
+  .admin-grid {
+    grid-template-columns: 1fr;
+    gap: var(--bt-space-lg);
+  }
+
+  .chart-wrapper {
+    height: 320px;
+  }
+
+  .table {
+    font-size: var(--bt-font-size-sm);
+  }
+
+  .table-head th,
+  .table-cell {
+    padding: var(--bt-space-sm);
+  }
+}
+
+/* ==========================================================================
+   SECTION 4 — Tablet Portrait (≤768px)
+========================================================================== */
+
+@media (max-width: 768px) {
+  .app-header {
+    padding: 0 var(--bt-space-lg);
+  }
+
+  .header-center {
+    display: none;
+  }
+
+  .header-right {
+    gap: var(--bt-space-sm);
+  }
+
+  .btn,
+  .btn-lg,
+  .btn-sm {
+    padding: var(--bt-space-sm) var(--bt-space-md);
+    font-size: var(--bt-font-size-sm);
+  }
+
+  .card-body,
+  .chart-body {
+    padding: var(--bt-space-md);
+  }
+
+  .metric-card {
+    padding: var(--bt-space-lg);
+  }
+
+  /* Mobile sidebar becomes overlay */
+  .app-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 80vw;
+    max-width: 320px;
+    transform: translateX(-100%);
+    transition: transform var(--bt-animation-medium) var(--bt-easing-standard);
+    z-index: var(--bt-z-overlay);
+  }
+
+  .app-sidebar.sidebar-mobile-visible {
+    transform: translateX(0);
+  }
+
+  .app-main {
+    margin-left: 0 !important;
+  }
+
+  /* Overlay backdrop when sidebar open */
+  body.sidebar-open::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    z-index: calc(var(--bt-z-overlay) - 1);
+  }
+}
+
+/* ==========================================================================
+   SECTION 5 — Large Mobile / Small Tablet (≤600px)
+========================================================================== */
+
+@media (max-width: 600px) {
+  .main-wrapper {
+    padding: var(--bt-space-lg);
+  }
+
+  .card {
+    border-radius: 0;
+    margin-left: calc(-1 * var(--bt-space-lg));
+    margin-right: calc(-1 * var(--bt-space-lg));
+  }
+
+  .execution-card-area,
+  .dashboard-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-wrapper {
+    height: 280px;
+  }
+
+  .progress {
+    height: 12px;
+  }
+
+  .rank-progress {
+    height: 16px;
+  }
+
+  .modal-wrapper {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 0;
+    height: 100%;
+  }
+
+  .modal-content {
+    max-height: 100vh;
+  }
+}
+
+/* ==========================================================================
+   SECTION 6 — Standard Mobile (≤480px)
+========================================================================== */
+
+@media (max-width: 480px) {
+  :root {
+    --bt-space-xl: 1.25rem;
+    --bt-space-lg: 1rem;
+  }
+
+  .app-header {
+    height: 56px;
+    padding: 0 var(--bt-space-md);
+  }
+
+  .btn,
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .form-group {
+    margin-bottom: var(--bt-space-md);
+  }
+
+  .input,
+  .textarea,
+  .select {
+    font-size: var(--bt-font-size-md);
+    padding: var(--bt-space-sm);
+  }
+
+  .chart-wrapper {
+    height: 240px;
+  }
+
+  .ticker-container {
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .ticker-scroll {
+    max-height: 120px;
+  }
+
+  .notification-pop {
+    width: 90vw;
+    margin: 0 auto;
+  }
+}
+
+/* ==========================================================================
+   SECTION 7 — Sidebar Mobile Overlay & Toggle Support
+========================================================================== */
+
+@media (max-width: 768px) {
+  .sidebar-mobile-toggle {
+    display: block !important; /* assumed toggle button in header */
+  }
+}
+
+/* ==========================================================================
+   SECTION 8 — Grid Collapse Helpers
+========================================================================== */
+
+@media (max-width: 1024px) {
+  .grid-auto-1col > * {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ==========================================================================
+   SECTION 9 — Table Horizontal Scroll on Small Screens
+========================================================================== */
+
+@media (max-width: 768px) {
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .table {
+    min-width: 640px; /* forces scroll on narrow screens */
+  }
+}
+
+/* ==========================================================================
+   SECTION 10 — Thought Ticker Mobile Reposition (example: bottom bar)
+========================================================================== */
+
+@media (max-width: 768px) {
+  .ticker-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--bt-z-sticky);
+    border-radius: 0;
+    background: rgba(15, 23, 42, 0.92);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid var(--bt-color-border);
+  }
+
+  .ticker-scroll {
+    white-space: nowrap;
+    animation: tickerMove 40s linear infinite;
+  }
+}

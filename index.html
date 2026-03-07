@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="default">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Billionaire Tech – Adaptive Life OS"/>
+  <title>Adaptive Life OS – Billionaire Tech</title>
+
+  <!-- Favicon & Meta -->
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon"/>
+  <meta name="theme-color" content="#0f172a"/>
+
+  <!-- CSS Loading Order – Critical: Do NOT change -->
+  <link rel="stylesheet" href="assets/css/01-variables.css"/>
+  <link rel="stylesheet" href="assets/css/02-base.css"/>
+  <link rel="stylesheet" href="assets/css/03-layout.css"/>
+  <link rel="stylesheet" href="assets/css/04-components.css"/>
+  <link rel="stylesheet" href="assets/css/05-animations.css"/>
+  <link rel="stylesheet" href="assets/css/06-responsive.css"/>
+  <link rel="stylesheet" href="assets/css/07-themes.css"/>
+
+</head>
+<body>
+
+  <!-- Root Application Container -->
+  <div class="app-root">
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="app-sidebar">
+      <!-- Populated dynamically by sidebar.ui.js -->
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="app-main" id="main-content">
+
+      <!-- Header / Top Bar -->
+      <header id="header">
+        <!-- Populated by header.ui.js -->
+      </header>
+
+      <!-- System Alert Banner (risk, burnout, critical) -->
+      <div id="alert-banner"></div>
+
+      <!-- Primary Execution Panel – dynamic view content loads here -->
+      <div id="execution-panel" class="main-scroll">
+        <!-- Initial loading state -->
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>Initializing Adaptive Life OS...</p>
+        </div>
+      </div>
+
+      <!-- Analytics & Charts Section -->
+      <section id="analytics-panel" class="analytics-container">
+        <!-- Chart wrappers populated by charts.ui.js -->
+      </section>
+
+      <!-- Thought Ticker (persistent across views) -->
+      <div id="thought-ticker-container" class="ticker-container">
+        <div id="thought-ticker" class="ticker-scroll"></div>
+      </div>
+
+      <!-- Manifestation Reminders -->
+      <section id="manifestation-panel">
+        <div id="manifest-morning-panel" class="manifest-card manifest-morning"></div>
+        <div id="manifest-night-panel" class="manifest-card manifest-night"></div>
+        <div id="manifest-history-panel" class="manifest-history-panel"></div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- Modal Root – all modals render here -->
+  <div id="modal-root"></div>
+
+  <!-- Toast & Alert Containers -->
+  <div id="alert-toast-container"></div>
+  <div id="alert-panel"></div>
+
+  <!-- JavaScript Loading Order – Critical: Do NOT change -->
+  <!-- Core Infrastructure -->
+  <script src="assets/js/core/08-storage.js"></script>
+  <script src="assets/js/core/09-state.js"></script>
+  <script src="assets/js/core/10-versioning.js"></script>
+  <script src="assets/js/core/11-eventbus.js"></script>
+  <script src="assets/js/core/12-recalculation.js"></script>
+
+  <!-- Authentication Layer -->
+  <script src="assets/js/auth/13-auth.guard.js"></script>
+  <script src="assets/js/auth/14-auth.session.js"></script>
+  <script src="assets/js/auth/15-auth.crypto.js"></script>
+
+  <!-- Primary Engines -->
+  <script src="assets/js/engine/16-user.engine.js"></script>
+  <script src="assets/js/engine/17-task.engine.js"></script>
+  <script src="assets/js/engine/18-habit.engine.js"></script>
+  <script src="assets/js/engine/19-mission.engine.js"></script>
+  <script src="assets/js/engine/20-finance.engine.js"></script>
+  <script src="assets/js/engine/21-health.engine.js"></script>
+  <script src="assets/js/engine/22-target.engine.js"></script>
+  <script src="assets/js/engine/23-streak.engine.js"></script>
+
+  <!-- Intelligence Engines -->
+  <script src="assets/js/engine/24-score.engine.js"></script>
+  <script src="assets/js/engine/25-discipline.engine.js"></script>
+  <script src="assets/js/engine/26-wealth.engine.js"></script>
+  <script src="assets/js/engine/27-risk.engine.js"></script>
+  <script src="assets/js/engine/28-burnout.engine.js"></script>
+  <script src="assets/js/engine/29-rank.engine.js"></script>
+  <script src="assets/js/engine/30-badge.engine.js"></script>
+  <script src="assets/js/engine/31-theme.engine.js"></script>
+
+  <!-- UI System -->
+  <script src="assets/js/ui/32-router.js"></script>
+  <script src="assets/js/ui/33-view.manager.js"></script>
+  <script src="assets/js/ui/34-component.loader.js"></script>
+  <script src="assets/js/ui/35-dashboard.ui.js"></script>
+  <script src="assets/js/ui/36-sidebar.ui.js"></script>
+  <script src="assets/js/ui/37-header.ui.js"></script>
+  <script src="assets/js/ui/38-alerts.ui.js"></script>
+  <script src="assets/js/ui/39-modals.ui.js"></script>
+  <script src="assets/js/ui/40-charts.ui.js"></script>
+  <script src="assets/js/ui/41-thoughts.ui.js"></script>
+  <script src="assets/js/ui/42-manifest.ui.js"></script>
+
+  <!-- Boot & Guard Systems -->
+  <script src="assets/js/core/43-boot.js"></script>
+  <script src="assets/js/core/44-router.guard.js"></script>
+  <script src="assets/js/core/45-system.health.js"></script>
+  <script src="assets/js/core/46-migration.manager.js"></script>
+  <script src="assets/js/core/47-reset.manager.js"></script>
+
+  <!-- Final Boot Trigger -->
+  <script>
+    // Ensure boot starts after all scripts load
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.Boot) {
+        Boot.init();
+      } else {
+        console.error("Boot module not loaded");
+      }
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,400 @@
+/*
+ * 03-layout.css
+ * Structural Layout Layer – Billionaire Tech Adaptive Life OS
+ *
+ * Defines the overall spatial skeleton of the application.
+ * Loaded after variables.css and base.css.
+ *
+ * Purpose: Establish major containers, positioning, grid/flex systems
+ *          and responsive-safe structural hierarchy.
+ *
+ * Strictly NO component styling, colors (except via variables),
+ * animations, media queries (except structural necessity), or theme overrides.
+ *
+ * Version: 1.0.0 – March 2026
+ */
+
+.app-root {
+  min-height: 100vh;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bt-color-bg-main);
+  overflow-x: hidden;
+}
+
+/* ==========================================================================
+   HEADER LAYOUT
+========================================================================== */
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--bt-z-sticky);
+  height: var(--bt-header-height);
+  background: var(--bt-color-bg-header);
+  border-bottom: 1px solid var(--bt-color-border);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--bt-space-xl);
+  flex-shrink: 0;
+}
+
+.header-container {
+  width: 100%;
+  max-width: var(--bt-container-max);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--bt-space-lg);
+}
+
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: var(--bt-space-md);
+}
+
+/* ==========================================================================
+   SIDEBAR LAYOUT
+========================================================================== */
+
+.app-sidebar {
+  position: fixed;
+  top: var(--bt-header-height);
+  left: 0;
+  bottom: 0;
+  width: var(--bt-sidebar-width);
+  background: var(--bt-color-bg-sidebar);
+  border-right: 1px solid var(--bt-color-border);
+  z-index: var(--bt-z-sticky);
+  transition: width var(--bt-animation-medium) var(--bt-easing-standard);
+  overflow: hidden;
+}
+
+.sidebar-inner {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--bt-space-lg) 0;
+  scrollbar-width: thin;
+}
+
+.sidebar-section {
+  padding: 0 var(--bt-space-lg);
+  margin-bottom: var(--bt-space-2xl);
+}
+
+.sidebar-footer {
+  padding: var(--bt-space-lg);
+  border-top: 1px solid var(--bt-color-border);
+  flex-shrink: 0;
+}
+
+/* Collapsed sidebar mode */
+.app-sidebar.sidebar-collapsed {
+  width: var(--bt-sidebar-collapsed-width);
+}
+
+.sidebar-collapsed .sidebar-section {
+  padding: 0 var(--bt-space-md);
+}
+
+.sidebar-collapsed .sidebar-label,
+.sidebar-collapsed .sidebar-subtitle,
+.sidebar-collapsed .ticker-controls span:not(.icon) {
+  display: none;
+}
+
+.sidebar-collapsed .sidebar-item {
+  justify-content: center;
+}
+
+.sidebar-collapsed .sidebar-section-header {
+  justify-content: center;
+}
+
+/* ==========================================================================
+   MAIN CONTENT AREA
+========================================================================== */
+
+.app-main {
+  margin-left: var(--bt-sidebar-width);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  transition: margin-left var(--bt-animation-medium) var(--bt-easing-standard);
+}
+
+.app-main.sidebar-collapsed {
+  margin-left: var(--bt-sidebar-collapsed-width);
+}
+
+.main-wrapper {
+  flex: 1;
+  padding: var(--bt-space-xl);
+  max-width: var(--bt-content-max);
+  margin: 0 auto;
+  width: 100%;
+}
+
+.main-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* ==========================================================================
+   DASHBOARD GRID STRUCTURE
+========================================================================== */
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--bt-space-lg);
+}
+
+.dashboard-top {
+  grid-column: 1 / -1;
+}
+
+.dashboard-metrics {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--bt-space-lg);
+}
+
+.dashboard-execution {
+  grid-column: 1 / 9;
+}
+
+.dashboard-analytics {
+  grid-column: 9 / -1;
+}
+
+/* ==========================================================================
+   EXECUTION PANEL LAYOUT
+========================================================================== */
+
+.execution-panel {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--bt-space-xl);
+}
+
+.execution-primary {
+  grid-column: 1 / 9;
+}
+
+.execution-secondary {
+  grid-column: 9 / -1;
+}
+
+.execution-card-area {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--bt-space-lg);
+}
+
+/* ==========================================================================
+   ANALYTICS & CHART CONTAINERS
+========================================================================== */
+
+.analytics-container {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--bt-space-lg);
+}
+
+.chart-wrapper {
+  grid-column: span 6;
+  background: var(--bt-color-bg-card);
+  border-radius: var(--bt-radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--bt-color-border);
+  box-shadow: var(--bt-shadow-md);
+}
+
+.chart-header {
+  padding: var(--bt-space-md) var(--bt-space-lg);
+  border-bottom: 1px solid var(--bt-color-border);
+}
+
+.chart-body {
+  padding: var(--bt-space-lg);
+  height: 320px;
+  position: relative;
+}
+
+/* Full-width chart variant */
+.chart-wrapper.full {
+  grid-column: 1 / -1;
+}
+
+/* ==========================================================================
+   SYSTEM BANNER AREA (Risk / Lockdown / Notifications)
+========================================================================== */
+
+.system-banner-area {
+  position: sticky;
+  top: var(--bt-header-height);
+  z-index: calc(var(--bt-z-sticky) + 1);
+  pointer-events: none;
+}
+
+.banner-container {
+  max-width: var(--bt-content-max);
+  margin: 0 auto;
+  padding: 0 var(--bt-space-xl);
+}
+
+/* ==========================================================================
+   THOUGHT TICKER ZONE (usually in sidebar)
+========================================================================== */
+
+.ticker-container {
+  background: var(--bt-thought-ticker-bg);
+  border-radius: var(--bt-radius-lg);
+  overflow: hidden;
+  margin: 0 var(--bt-space-lg);
+}
+
+.ticker-scroll {
+  max-height: 180px;
+  overflow-y: auto;
+  padding: var(--bt-space-md);
+  scrollbar-width: none;
+}
+
+.ticker-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.ticker-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--bt-space-xs) var(--bt-space-md);
+  font-size: var(--bt-font-size-sm);
+}
+
+/* ==========================================================================
+   ADMIN DASHBOARD LAYOUT
+========================================================================== */
+
+.admin-container {
+  padding: var(--bt-space-xl);
+  max-width: var(--bt-container-max);
+  margin: 0 auto;
+  width: 100%;
+}
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--bt-space-xl);
+}
+
+.admin-users-table {
+  grid-column: 1 / -1;
+}
+
+.admin-analytics {
+  grid-column: 1 / 7;
+}
+
+.admin-audit-panel,
+.admin-system-health {
+  grid-column: 7 / -1;
+}
+
+/* ==========================================================================
+   MODAL LAYOUT SYSTEM
+========================================================================== */
+
+.modal-root {
+  position: fixed;
+  inset: 0;
+  z-index: var(--bt-z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--bt-modal-overlay);
+  backdrop-filter: var(--bt-backdrop-blur);
+  pointer-events: all;
+}
+
+.modal-wrapper {
+  position: relative;
+  z-index: 2;
+  max-width: 90vw;
+  max-height: 90vh;
+  pointer-events: all;
+  overflow: hidden;
+  border-radius: var(--bt-radius-xl);
+  box-shadow: var(--bt-shadow-xl);
+}
+
+.modal-content {
+  max-height: 90vh;
+  overflow-y: auto;
+  background: var(--bt-color-bg-card);
+}
+
+/* Stacked / confirmation modals variant */
+.modal-wrapper.confirm {
+  max-width: 480px;
+}
+
+/* ==========================================================================
+   RESPONSIVE SAFETY & HELPERS
+========================================================================== */
+
+.content-max {
+  max-width: var(--bt-content-max);
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+.scroll-safe {
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.no-scroll {
+  overflow: hidden;
+}
+
+/* Prevent content jump when scrollbar appears/disappears */
+html.has-scrollbar {
+  scrollbar-gutter: stable;
+}
