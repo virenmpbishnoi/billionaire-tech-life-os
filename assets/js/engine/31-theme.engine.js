@@ -104,7 +104,7 @@ const RISK_RANGES = {
   }
 
   function applyThemeToState() {
-    State.update('theme', { ...currentTheme });
+    State.update('theme', () => ({ ...currentTheme }));
   }
 
   function shouldNotifyThemeChange(oldTheme, newTheme) {
@@ -370,3 +370,4 @@ const RISK_RANGES = {
 
 
 })();
+
