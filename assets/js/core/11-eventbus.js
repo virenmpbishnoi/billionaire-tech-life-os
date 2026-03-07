@@ -298,4 +298,7 @@
     }
   }, 300_000);
 
+
 })();
+// expose globally
+window.eventbus = EventBus;
