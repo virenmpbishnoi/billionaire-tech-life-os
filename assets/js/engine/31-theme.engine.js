@@ -14,7 +14,11 @@
  *
  * Version: 1.0.0 – March 2026
  */
-
+const RISK_RANGES = {
+  low: { min: 0, max: 30 },
+  medium: { min: 31, max: 70 },
+  high: { min: 71, max: 100 }
+};
 (function () {
   'use strict';
 
@@ -363,5 +367,6 @@
     lockdown: (active) => ThemeEngine.applyLockdownMode(active),
     setPref: (theme) => ThemeEngine.applyUserThemePreference(theme)
   };
+
 
 })();
