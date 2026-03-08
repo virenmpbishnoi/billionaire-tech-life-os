@@ -94,7 +94,7 @@ const bus = window.EventBus;
       return true;
     }
 
-    eventbus?.emit('MIGRATION_STARTED', { from: fromVersion, to: toVersion });
+    bus?.emit('MIGRATION_STARTED', { from: fromVersion, to: toVersion });
 
     // Sort migrations by target version
     const sortedTargets = Array.from(MIGRATIONS.keys()).sort(compareVersions);
@@ -167,7 +167,7 @@ const bus = window.EventBus;
 
     const success = Storage.write(VERSION_STORAGE_KEY, metadata);
     if (success) {
-      eventbus?.emit('VERSION_UPDATED', metadata);
+      bus?.emit('VERSION_UPDATED', metadata);
     }
     return success;
   }
@@ -293,5 +293,6 @@ const bus = window.EventBus;
   window.__debugVersionInfo = () => Versioning.getVersionInfo().then(console.log);
 
 })();
+
 
 
