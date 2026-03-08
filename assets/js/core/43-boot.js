@@ -291,10 +291,9 @@
   const Boot = {
 
     async init() {
-      if (bootStarted) {
-        console.warn('[Boot] Already started – ignoring duplicate call');
-        return;
-      }
+      if (this.started === true) {
+  return;
+}
 
       bootStarted = true;
       bootStartTime = Date.now();
@@ -380,5 +379,6 @@
     state: () => Boot.getBootState(),
     restart: () => Boot.init()
   };
+
 
 })();
