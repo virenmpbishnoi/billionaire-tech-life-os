@@ -166,7 +166,11 @@
       let newValue;
 
       try {
-        newValue = updater(oldValue);
+        if (typeof updater === 'function') {
+  newValue = updater(oldValue);
+} else {
+  newValue = updater;
+}
 
         if (newValue === undefined || newValue === oldValue) {
           console.warn('[State] Update returned same/undefined – skipping');
@@ -322,6 +326,7 @@
   }, 30000);
 
 })();
+
 
 
 
