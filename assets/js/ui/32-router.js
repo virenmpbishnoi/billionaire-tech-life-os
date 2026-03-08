@@ -115,7 +115,6 @@
   };
 
   const DEFAULT_ROUTE = '/dashboard';
-  const FALLBACK_ROUTE = '/login';
 
   // ─────────────────────────────────────────────────────────────────────────────
   // INTERNAL STATE
@@ -156,17 +155,42 @@
 
     navigationInProgress = true;
 
-    const guardResult = runNavigationGuards(path);
-    if (!guardResult.allowed) {
+    const route = ROUTES[path];
+
+if (!route) {
+  EventBus?.emit('ROUTE_NOT_FOUND', { path });
+  navigationInProgress = false;
+
+  if (path !== DEFAULT_ROUTE) {
+    navigate(DEFAULT_ROUTE, { replace: true });
+  }
+
+  return false;
+}
+
+const guardResult = runNavigationGuards(path);
+if (!guardResult.allowed) {
       if (guardResult.redirect) {
         navigate(guardResult.redirect, { replace: true });
       }
       navigationInProgress = false;
-      EventBus.emit('ROUTE_NAVIGATION_FAILED', { path, reason: guardResult.reason });
+      EventBus?.emit('ROUTE_NAVIGATION_FAILED', { path, reason: guardResult.reason });
       return false;
     }
 
-    const route = ROUTES[path];
+ const route = ROUTES[path];
+
+if (!route) {
+  EventBus?.emit('ROUTE_NOT_FOUND', { path });
+
+  navigationInProgress = false;
+
+  if (path !== DEFAULT_ROUTE) {
+    navigate(DEFAULT_ROUTE, { replace: true });
+  }
+
+  return false;
+}
     const routeData = {
       path,
       id: route?.id || 'unknown',
@@ -193,14 +217,14 @@
     currentRoute = routeData;
 
     // Sync to state
-    State.update('route', routeData);
+    State?.update?.('route', routeData);
 
     // Emit events
-    EventBus.emit('ROUTE_NAVIGATION_STARTED', routeData);
-    EventBus.emit('ROUTE_CHANGED', routeData);
+    EventBus?.emit('ROUTE_NAVIGATION_STARTED', routeData);
+    EventBus?.emit('ROUTE_CHANGED', routeData);
 
     // Trigger view load (delegated to ViewManager)
-    EventBus.emit('VIEW_LOAD_REQUEST', { viewId: route?.view, path });
+    EventBus?.emit('VIEW_LOAD_REQUEST', { viewId: route?.view, path });
 
     navigationInProgress = false;
 
@@ -215,7 +239,10 @@
 
     init() {
       // Initial route from URL
-      const initialPath = window.location.pathname || '/';
+      let initialPath = window.location.pathname || '/';
+      if (!ROUTES[initialPath]) {
+      initialPath = DEFAULT_ROUTE;
+}
       navigate(initialPath, { replace: true });
 
       // Handle browser back/forward
@@ -228,7 +255,9 @@
       EventBus.on('NAVIGATE_REQUEST', ({ path, replace }) => {
         navigate(path, { replace });
       });
-
+EventBus.on('SIDEBAR_NAVIGATE', ({ route }) => {
+  navigate(route);
+});
       // Handle 404 / invalid routes
       EventBus.on('ROUTE_NOT_FOUND', () => {
         navigate(DEFAULT_ROUTE, { replace: true });
@@ -236,9 +265,9 @@
 
       // Protect logout / session invalidation
       EventBus.on('AUTH_LOGOUT_TRIGGERED', () => {
-        if (currentRoute?.requiresAuth) {
-          navigate('/login', { replace: true });
-        }
+        if (ROUTES[currentRoute?.path]?.requiresAuth) {
+  navigate('/login', { replace: true });
+}
       });
 
       console.log('[Router] Initialized – client-side navigation active');
@@ -299,5 +328,6 @@
     history: () => Router.getHistory(),
     back: () => Router.back()
   };
+
 
 })();
