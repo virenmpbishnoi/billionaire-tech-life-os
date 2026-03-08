@@ -181,7 +181,7 @@
     async init() {
       const stored = await readStoredVersionMetadata();
 
-      Eventbus?.emit('VERSION_INITIALIZED', {
+      EventBus.emit('VERSION_INITIALIZED', {
         app: APP_VERSION,
         schema: SCHEMA_VERSION,
         stored
@@ -294,3 +294,4 @@
 
 
 })();
+
