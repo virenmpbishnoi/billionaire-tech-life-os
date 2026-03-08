@@ -28,18 +28,20 @@
   const TRANSITION_CLASS = 'view-transition';
   const TRANSITION_DURATION = 300; // ms – matches --bt-animation-medium
 
-  const VIEW_REGISTRY = {
-    dashboard:  { id: 'dashboard',  title: 'Dashboard',  transition: 'fade-up' },
-    tasks:      { id: 'tasks',      title: 'Tasks',      transition: 'slide-right' },
-    habits:     { id: 'habits',     title: 'Habits',     transition: 'fade-in' },
-    missions:   { id: 'missions',   title: 'Missions',   transition: 'scale-in' },
-    health:     { id: 'health',     title: 'Health',     transition: 'fade-up' },
-    finance:    { id: 'finance',    title: 'Finance',    transition: 'slide-up' },
-    targets:    { id: 'targets',    title: 'Targets',    transition: 'fade-in' },
-    analytics:  { id: 'analytics',  title: 'Analytics',  transition: 'fade-up' },
-    badges:     { id: 'badges',     title: 'Badges',     transition: 'scale-in' },
-    settings:   { id: 'settings',   title: 'Settings',   transition: 'fade-in' }
-  };
+const VIEW_REGISTRY = {
+  dashboard:  { id: 'dashboard', title: 'Dashboard', transition: 'fade-up' },
+  tasks:      { id: 'tasks', title: 'Tasks', transition: 'slide-right' },
+  habits:     { id: 'habits', title: 'Habits', transition: 'fade-in' },
+  missions:   { id: 'missions', title: 'Missions', transition: 'scale-in' },
+  health:     { id: 'health', title: 'Health', transition: 'fade-up' },
+  finance:    { id: 'finance', title: 'Finance', transition: 'slide-up' },
+  targets:    { id: 'targets', title: 'Targets', transition: 'fade-in' },
+  analytics:  { id: 'analytics', title: 'Analytics', transition: 'fade-up' },
+  badges:     { id: 'badges', title: 'Badges', transition: 'scale-in' },
+  settings:   { id: 'settings', title: 'Settings', transition: 'fade-in' },
+
+  login: { id: 'login', title: 'Login', transition: 'fade-in' }
+};
 
   // ─────────────────────────────────────────────────────────────────────────────
   // INTERNAL STATE
@@ -54,10 +56,6 @@
   return document.getElementById(EXECUTION_PANEL_ID);
 }
 
-  if (!panel) {
-    console.error('[ViewManager] Execution panel not found – #execution-panel missing');
-  }
-
   // ─────────────────────────────────────────────────────────────────────────────
   // INTERNAL HELPERS
   // ─────────────────────────────────────────────────────────────────────────────
@@ -66,13 +64,14 @@
     return VIEW_REGISTRY[viewId] || null;
   }
 
-  function clearPanel() {
-    if (!panel) return;
-    // Remove all child nodes safely
-    while (panel.firstChild) {
-      panel.removeChild(panel.firstChild);
-    }
+function clearPanel() {
+  const panel = getPanel();
+  if (!panel) return;
+
+  while (panel.firstChild) {
+    panel.removeChild(panel.firstChild);
   }
+}
 
   function applyTransition(viewElement, transitionType = 'fade-in') {
     if (!viewElement) return;
@@ -81,8 +80,8 @@
 
     // Remove transition class after animation completes
     setTimeout(() => {
-      viewElement.classList.remove(TRANSITION_CLASS, transitionType);
-    }, TRANSITION_DURATION + 50);
+  viewElement.classList.remove(TRANSITION_CLASS, transitionType);
+}, TRANSITION_DURATION + 50);
   }
 
   function recordNavigation(viewId, from = null) {
@@ -96,7 +95,7 @@
   }
 
   function emitViewEvent(eventName, payload = {}) {
-    EventBus.emit(eventName, {
+    EventBus?.emit(eventName, {
       view: activeView?.id || 'unknown',
       timestamp: Date.now(),
       ...payload
@@ -117,14 +116,11 @@
       });
 
       // Handle route not found / fallback
-      EventBus.on('ROUTE_NOT_FOUND', () => {
-        this.loadAndMountView(DEFAULT_VIEW);
-      });
 
       // Handle auth logout → redirect to login view
-      EventBus.on('AUTH_LOGOUT_TRIGGERED', () => {
-        this.loadAndMountView('login');
-      });
+     EventBus.on('AUTH_LOGOUT_TRIGGERED', () => {
+  this.loadAndMountView('login');
+});
 
       // Initial view load (Router already set initial route)
       const initialRoute = Router.getCurrentRoute();
@@ -139,7 +135,7 @@
     async loadAndMountView(viewId) {
       if (!viewId || !getViewConfig(viewId)) {
         console.warn('[ViewManager] Invalid view requested:', viewId);
-        EventBus.emit('VIEW_ERROR', { viewId, reason: 'not_found' });
+        EventBus?.emit('VIEW_ERROR', { viewId, reason: 'not_found' });
         viewId = DEFAULT_VIEW;
       }
 
@@ -173,7 +169,13 @@
 
         // 4. Mount into execution panel
         clearPanel();
-        panel.appendChild(viewContainer);
+        const panel = getPanel();
+if (!panel) {
+  console.error('[ViewManager] Panel missing');
+  return;
+}
+
+panel.appendChild(viewContainer);
 
         // 5. Apply entrance transition
         const config = getViewConfig(viewId);
@@ -194,11 +196,11 @@
         emitViewEvent('VIEW_RENDERED', { viewId });
 
         // 8. Notify other systems (sidebar, header, etc.)
-        EventBus.emit('VIEW_ACTIVATED', { viewId, title: config?.title });
+        EventBus?.emit('VIEW_ACTIVATED', { viewId, title: config?.title });
 
       } catch (err) {
         console.error('[ViewManager] View load failed:', viewId, err);
-        EventBus.emit('VIEW_ERROR', { viewId, error: err.message });
+        EventBus?.emit('VIEW_ERROR', { viewId, error: err.message });
 
         // Fallback to dashboard
         if (viewId !== DEFAULT_VIEW) {
@@ -219,17 +221,16 @@
       // Apply exit transition (optional – can be CSS-based)
       container.classList.add('view-exit');
 
-      // Wait for exit animation
-      setTimeout(() => {
-        if (container.parentNode) {
-          container.parentNode.removeChild(container);
-        }
+// Wait for exit animation
+setTimeout(() => {
+  if (container.parentNode) {
+    container.parentNode.removeChild(container);
+  }
 
-        emitViewEvent('VIEW_DESTROYED', { viewId });
+  emitViewEvent('VIEW_DESTROYED', { viewId });
 
-        activeView = null;
-      }, TRANSITION_DURATION);
-    },
+  activeView = null;
+}, TRANSITION_DURATION);
 
     // ─── Get current active view info ─────────────────────────────────────────
     getActiveView() {
