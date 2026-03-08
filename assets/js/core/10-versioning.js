@@ -220,12 +220,7 @@
     }
   }
 };
-        // Should trigger recovery.engine / backup restore here
-      }
-
-      return migrationSuccess;
-    },
-
+    
     getAppVersion() {
       return APP_VERSION;
     },
@@ -299,6 +294,7 @@
 
 
 })();
+
 
 
 
