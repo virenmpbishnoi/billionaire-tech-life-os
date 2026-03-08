@@ -16,7 +16,7 @@
 
 (function () {
   'use strict';
-
+const bus = window.EventBus;
   // ─────────────────────────────────────────────────────────────────────────────
   // CONFIGURATION & CONSTANTS
   // ─────────────────────────────────────────────────────────────────────────────
@@ -293,3 +293,4 @@
   window.__debugVersionInfo = () => Versioning.getVersionInfo().then(console.log);
 
 })();
+
