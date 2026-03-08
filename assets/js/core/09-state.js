@@ -283,13 +283,13 @@
         const success = Storage.write('appState', currentState);
         if (success) {
           this.clearDirty();
-          eventbus?.emit('STATE_SYNCED', { timestamp: Date.now() });
+          bus?.emit('STATE_SYNCED', { timestamp: Date.now() });
           return true;
         }
         return false;
       } catch (err) {
         console.error('[State] Sync failed:', err);
-        eventbus?.emit('STATE_SYNC_ERROR', { error: err.message });
+        bus?.emit('STATE_SYNC_ERROR', { error: err.message });
         return false;
       }
     }
@@ -322,6 +322,7 @@
   }, 30000);
 
 })();
+
 
 
 
