@@ -19,6 +19,7 @@
 (function () {
   'use strict';
 
+const bus = window.EventBus;
   // ─────────────────────────────────────────────────────────────────────────────
   // CONFIGURATION & THRESHOLDS
   // ─────────────────────────────────────────────────────────────────────────────
@@ -130,11 +131,12 @@
     const health = State.getPath('health') || {};
     const records = health.records || [];
 
-    const today = new Date().toISOString().split('T')[0];
-    const recentSleep = records
-      .filter(r => r.type === 'sleep' && new Date(r.timestamp).toISOString().split('T')[0] >= today - 7)
-      .sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
-
+const recentSleep = records
+  .filter(r => {
+    const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+    return r.type === 'sleep' && new Date(r.timestamp).getTime() >= sevenDaysAgo;
+  })
+  .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
     if (recentSleep.length === 0) return 0;
 
     // Duration deficit (ideal 7–9h)
@@ -182,7 +184,7 @@
   }
 
   function analyzeProductivityOverload() {
-    const score = State.getPath('scores.productivityScore') || 50;
+    const score = State.getPath('score.productivityScore') || 50;
     const trend = ScoreEngine?.calculateScoreTrend?.(7)?.change || 0;
 
     const pressurePenalty = trend >= 15 ? 40 : trend >= 8 ? 25 : 0;
@@ -190,7 +192,24 @@
 
     return clampBurnout(pressurePenalty + lowRecovery);
   }
+// ─────────────────────
+// Utility Functions
+// ─────────────────────
+function weightedAverage(values, weights) {
+  let sum = 0;
+  let weightSum = 0;
 
+  for (const key in values) {
+    const value = Number(values[key]) || 0;
+    const weight = Number(weights[key]) || 0;
+
+    sum += value * weight;
+    weightSum += weight;
+  }
+
+  if (weightSum === 0) return 0;
+  return sum / weightSum;
+}
   // ─────────────────────────────────────────────────────────────────────────────
   // PUBLIC BURNOUT ENGINE API
   // ─────────────────────────────────────────────────────────────────────────────
@@ -199,17 +218,17 @@
 
     async init() {
       // Recalculate on major fatigue events via recalc orchestrator
-      EventBus.on('RECALCULATION_COMPLETED', () => {
+      bus?.on('RECALCULATION_COMPLETED', () => {
         this.recalculateBurnout();
       });
 
       // React to specific fatigue signals
-      EventBus.on('HEALTH_SLEEP_LOGGED', () => this.recalculateBurnout());
-      EventBus.on('HEALTH_WORKOUT_LOGGED', () => this.recalculateBurnout());
-      EventBus.on('DISCIPLINE_DECREASE_DETECTED', () => this.recalculateBurnout());
+      bus?.on('HEALTH_SLEEP_LOGGED', () => this.recalculateBurnout());
+      bus?.on('HEALTH_WORKOUT_LOGGED', () => this.recalculateBurnout());
+      bus?.on('DISCIPLINE_DECREASE_DETECTED', () => this.recalculateBurnout());
 
       // Load history on login
-      EventBus.on('USER_PROFILE_LOADED', async () => {
+      bus?.on('USER_PROFILE_LOADED', async () => {
         await this.loadBurnoutHistory();
         this.recalculateBurnout();
       });
@@ -233,10 +252,10 @@
 
       history = normalizeHistory(history);
 
-      State.update('burnoutHistory', history);
-      State.update('burnout', history[getTodayKey()] || { burnoutIndex: 0 });
+      State.update('burnoutHistory', () => history);
+      State.update('burnout', () => history[getTodayKey()] || { burnoutIndex: 0 });
 
-      EventBus.emit('BURNOUT_HISTORY_LOADED', {
+      bus?.emit('BURNOUT_HISTORY_LOADED', {
         daysStored: Object.keys(history).length
       });
     },
@@ -259,22 +278,8 @@
       const normalized = normalizeHistory(history);
       State.update('burnoutHistory', () => normalized);
 
-      Storage.write(`user:${user.userId}:burnout:history`, normalized);
-    },// ─────────────────────
-// Utility Functions
-// ─────────────────────
-function weightedAverage(values, weights) {
-  let sum = 0;
-  let weightSum = 0;
-  for (const key in values) {
-    const value = Number(values[key]) || 0;
-    const weight = Number(weights[key]) || 0;
-    sum += value * weight;
-    weightSum += weight;
-  }
-  if (weightSum === 0) return 0;
-  return sum / weightSum;
-}
+Storage.write(`user:${user.userId}:burnout:history`, normalized); 
+},
 // ─────────────────────
 // Core burnout recalculation
 // ─────────────────────
@@ -315,16 +320,16 @@ recalculateBurnout() {
           updatedAt: Date.now()
         };
 
-        State.update('burnout', metrics);
+        State.update('burnout', () => metrics);
         this.saveBurnoutHistory();
 
-        EventBus.emit('BURNOUT_UPDATED', metrics);
-        EventBus.emit('BURNOUT_INDEX_UPDATED', { index: burnoutIndex, severity });
+        bus?.emit('BURNOUT_UPDATED', metrics);
+        bus?.emit('BURNOUT_INDEX_UPDATED', { index: burnoutIndex, severity });
 
         // Warning & critical triggers
         if (burnoutIndex >= 60 && previousIndex < 60) {
           if (shouldAlert('warning')) {
-            EventBus.emit('BURNOUT_WARNING_DETECTED', {
+            bus?.emit('BURNOUT_WARNING_DETECTED', {
               burnoutIndex,
               severity,
               fatigueLevel: metrics.fatigueLevel,
@@ -341,7 +346,7 @@ recalculateBurnout() {
 
         if (burnoutIndex >= 80 && previousIndex < 80) {
           if (shouldAlert('critical')) {
-            EventBus.emit('BURNOUT_CRITICAL_DETECTED', {
+            bus?.emit('BURNOUT_CRITICAL_DETECTED', {
               burnoutIndex,
               severity,
               fatigueLevel: metrics.fatigueLevel
@@ -352,7 +357,7 @@ recalculateBurnout() {
 
         // Recovery suggestion when risk is high but trending down
         if (burnoutIndex > 60 && change < -5) {
-          EventBus.emit('BURNOUT_RECOVERY_SUGGESTED', {
+          bus?.emit('BURNOUT_RECOVERY_SUGGESTED', {
             burnoutIndex,
             improvement: Math.abs(change),
             suggestions: [
@@ -366,7 +371,7 @@ recalculateBurnout() {
         return metrics;
       } catch (err) {
         console.error('[BurnoutEngine] Recalculation failed:', err);
-        EventBus.emit('BURNOUT_ENGINE_ERROR', { error: err.message });
+        bus?.emit('BURNOUT_ENGINE_ERROR', { error: err.message });
         return null;
       }
     },
@@ -411,3 +416,4 @@ recalculateBurnout() {
 
 
 })();
+
