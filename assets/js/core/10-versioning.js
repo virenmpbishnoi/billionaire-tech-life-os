@@ -115,7 +115,7 @@ const bus = window.EventBus;
           console.groupEnd();
         } catch (err) {
           console.error('[Migration] Failed:', step.description, err);
-          eventbus?.emit('MIGRATION_FAILED', {
+          bus?.emit('MIGRATION_FAILED', {
             target,
             step: step.description,
             error: err.message
@@ -132,10 +132,10 @@ const bus = window.EventBus;
 
     if (success) {
       await Versioning.updateStoredVersion(toVersion, SCHEMA_VERSION);
-      eventbus?.emit('MIGRATION_COMPLETED', { from: fromVersion, to: toVersion });
+      bus?.emit('MIGRATION_COMPLETED', { from: fromVersion, to: toVersion });
     } else {
       // Trigger rollback / recovery
-      eventbus?.emit('MIGRATION_ROLLBACK_NEEDED', { from: fromVersion, attempted: current });
+      bus?.emit('MIGRATION_ROLLBACK_NEEDED', { from: fromVersion, attempted: current });
     }
 
     return success;
@@ -181,7 +181,7 @@ const bus = window.EventBus;
     async init() {
       const stored = await readStoredVersionMetadata();
 
-      eventbus?.emit('VERSION_INITIALIZED', {
+      bus?.emit('VERSION_INITIALIZED', {
         app: APP_VERSION,
         schema: SCHEMA_VERSION,
         stored
@@ -191,12 +191,12 @@ const bus = window.EventBus;
       const schemaMismatch = compareVersions(SCHEMA_VERSION, stored.schemaVersion) !== 0;
 
       if (!appMismatch && !schemaMismatch) {
-        eventbus?.emit('VERSION_MATCH', stored);
+        bus?.emit('VERSION_MATCH', stored);
         console.log('[Versioning] Versions match – ready');
         return true;
       }
 
-      eventbus?.emit('VERSION_MISMATCH', {
+      bus?.emit('VERSION_MISMATCH', {
         currentApp: APP_VERSION,
         storedApp: stored.appVersion,
         currentSchema: SCHEMA_VERSION,
@@ -268,7 +268,7 @@ const bus = window.EventBus;
     async rollbackMigration(targetVersion) {
       console.warn('[Versioning] Rollback requested to', targetVersion);
       // In production: restore snapshot + update version metadata
-      eventbus?.emit('VERSION_ROLLBACK_EXECUTED', { target: targetVersion });
+      bus?.emit('VERSION_ROLLBACK_EXECUTED', { target: targetVersion });
     }
   };
 
@@ -293,4 +293,5 @@ const bus = window.EventBus;
   window.__debugVersionInfo = () => Versioning.getVersionInfo().then(console.log);
 
 })();
+
 
