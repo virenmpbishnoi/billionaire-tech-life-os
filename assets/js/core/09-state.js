@@ -145,7 +145,7 @@
       // Initial sync timestamp
       this.update('system.lastSync', () => Date.now(), { silent: true });
 
-      EventBus?.emit('STATE_INITIALIZED', { timestamp: Date.now() });
+      bus?.emit('STATE_INITIALIZED', { timestamp: Date.now() });
       console.log('[State] Initialized – loaded', Object.keys(currentState).length, 'top-level keys');
     },
 
@@ -322,6 +322,7 @@
   }, 30000);
 
 })();
+
 
 
 
