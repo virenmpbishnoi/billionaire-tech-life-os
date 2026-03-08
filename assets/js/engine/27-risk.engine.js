@@ -108,7 +108,7 @@
   // ─────────────────────────────────────────────────────────────────────────────
 
   function detectProductivityRisk() {
-    const score = State.getPath('scores.productivityScore') || 50;
+    const score = State.getPath('score.productivityScore') || 50;
     const trend = ScoreEngine?.calculateScoreTrend?.(7)?.change || 0;
 
     // Recent sharp drop or sustained low performance
@@ -155,7 +155,7 @@
     const baseRisk = dailyScore < 4 ? 60 : dailyScore < 6 ? 35 : 0;
 
     // Burnout signal amplification
-    const burnout = health.burnoutScore || 0;
+    const burnout = State.getPath('burnout.burnoutIndex') || 0;
     const burnoutPenalty = burnout > 20 ? 40 : burnout > 10 ? 20 : 0;
 
     return clampRisk(baseRisk + burnoutPenalty);
@@ -174,7 +174,21 @@
 
     return clampRisk(streakRisk + taskRisk);
   }
+  function weightedAverage(values, weights) {
+  let sum = 0;
+  let weightSum = 0;
 
+  for (const key in values) {
+    const value = Number(values[key]) || 0;
+    const weight = Number(weights[key]) || 0;
+
+    sum += value * weight;
+    weightSum += weight;
+  }
+
+  if (weightSum === 0) return 0;
+  return sum / weightSum;
+}
   // ─────────────────────────────────────────────────────────────────────────────
   // PUBLIC RISK ENGINE API
   // ─────────────────────────────────────────────────────────────────────────────
@@ -244,26 +258,9 @@
 
       Storage.write(`user:${user.userId}:risk:history`, normalized);
     },
-    // ─────────────────────────────
-// Utility Functions
-// ─────────────────────────────
-function weightedAverage(values, weights) {
-  let sum = 0;
-  let weightSum = 0;
 
-  for (const key in values) {
-    const value = Number(values[key]) || 0;
-    const weight = Number(weights[key]) || 0;
-    sum += value * weight;
-    weightSum += weight;
-  }
-  if (weightSum === 0) return 0;
-  return sum / weightSum;
-}
-// ─────────────────────────────
-// Core risk recalculation – aggregates domain risks
-// ─────────────────────────────
-recalculateRisk() {
+    // ─── Core risk recalculation – aggregates domain risks ────────────────────
+    recalculateRisk() {
       try {
         const prodRisk    = detectProductivityRisk();
         const discRisk    = detectDisciplineRisk();
@@ -388,6 +385,5 @@ recalculateRisk() {
     recalculate: () => RiskEngine.recalculateRisk(),
     metrics: () => RiskEngine.getRiskMetrics()
   };
-
 
 })();
