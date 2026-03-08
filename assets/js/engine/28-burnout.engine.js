@@ -257,15 +257,30 @@
       };
 
       const normalized = normalizeHistory(history);
-      State.update('burnoutHistory', normalized);
+      State.update('burnoutHistory', () => normalized);
 
       Storage.write(`user:${user.userId}:burnout:history`, normalized);
-    },
-
-    // ─── Core burnout recalculation – aggregates fatigue signals ─────────────
-    recalculateBurnout() {
-      try {
-        const sleepFatigue       = analyzeSleepFatigue();
+    },// ─────────────────────
+// Utility Functions
+// ─────────────────────
+function weightedAverage(values, weights) {
+  let sum = 0;
+  let weightSum = 0;
+  for (const key in values) {
+    const value = Number(values[key]) || 0;
+    const weight = Number(weights[key]) || 0;
+    sum += value * weight;
+    weightSum += weight;
+  }
+  if (weightSum === 0) return 0;
+  return sum / weightSum;
+}
+// ─────────────────────
+// Core burnout recalculation
+// ─────────────────────
+recalculateBurnout() {
+  try {
+    const sleepFatigue = analyzeSleepFatigue();
         const workloadPressure   = analyzeWorkloadPressure();
         const disciplineExhaustion = analyzeDisciplineExhaustion();
         const productivityOverload = analyzeProductivityOverload();
@@ -393,5 +408,6 @@
     recalculate: () => BurnoutEngine.recalculateBurnout(),
     metrics: () => BurnoutEngine.getBurnoutMetrics()
   };
+
 
 })();
