@@ -517,4 +517,48 @@
   height: 64px;
   margin-bottom: var(--bt-space-lg);
   opacity: 0.4;
+
+}
+/* =========================
+   SIDEBAR NAVIGATION
+========================= */
+
+#sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-item {
+  display: block;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  text-decoration: none;
+  color: var(--bt-color-text-secondary);
+  transition: background 0.2s;
+}
+
+.sidebar-link:hover {
+  background: var(--bt-color-bg-hover);
+  color: var(--bt-color-text-primary);
+}
+
+.sidebar-item.active .sidebar-link {
+  background: var(--bt-color-primary);
+  color: white;
+}
+
+.sidebar-label {
+  font-size: 14px;
+}
+
+.app-sidebar {
+  width: 220px;
+  background: var(--bt-color-bg-surface);
+  border-right: 1px solid var(--bt-color-border);
 }
