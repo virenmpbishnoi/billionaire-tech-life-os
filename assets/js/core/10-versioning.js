@@ -177,44 +177,49 @@
   // ─────────────────────────────────────────────────────────────────────────────
 
   const Versioning = {
-
-    async init() {
+  async init() {
+    try {
       const stored = await readStoredVersionMetadata();
-
       EventBus.emit('VERSION_INITIALIZED', {
         app: APP_VERSION,
         schema: SCHEMA_VERSION,
         stored
       });
-
-      const appMismatch = compareVersions(APP_VERSION, stored.appVersion) !== 0;
-      const schemaMismatch = compareVersions(SCHEMA_VERSION, stored.schemaVersion) !== 0;
-
+      const appMismatch = compareVersions(APP_VERSION, stored?.appVersion) !== 0;
+      const schemaMismatch = compareVersions(SCHEMA_VERSION, stored?.schemaVersion) !== 0;
       if (!appMismatch && !schemaMismatch) {
         EventBus.emit('VERSION_MATCH', stored);
         console.log('[Versioning] Versions match – ready');
         return true;
       }
-
       EventBus.emit('VERSION_MISMATCH', {
         currentApp: APP_VERSION,
-        storedApp: stored.appVersion,
+        storedApp: stored?.appVersion,
         currentSchema: SCHEMA_VERSION,
-        storedSchema: stored.schemaVersion
+        storedSchema: stored?.schemaVersion
       });
-
       console.warn('[Versioning] Version mismatch detected – initiating migration');
-
       const migrationSuccess = await runMigrations(
-        stored.schemaVersion || '0.0.0',
+        stored?.schemaVersion || '0.0.0',
         SCHEMA_VERSION
       );
-
       if (migrationSuccess) {
         await updateStoredVersion();
         console.log('[Versioning] Migration completed successfully');
+        EventBus.emit('VERSION_MIGRATION_SUCCESS');
+        return true;
       } else {
         console.error('[Versioning] Migration failed – recovery needed');
+        EventBus.emit('VERSION_MIGRATION_FAILED');
+        return false;
+      }
+    } catch (error) {
+      console.error('[Versioning] Initialization failed:', error);
+      EventBus.emit('VERSION_INIT_ERROR', error);
+      return false;
+    }
+  }
+};
         // Should trigger recovery.engine / backup restore here
       }
 
@@ -294,5 +299,6 @@
 
 
 })();
+
 
 
