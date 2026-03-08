@@ -68,11 +68,12 @@
     const sidebar = getSidebar();
     if (!sidebar) return;
 
-    const menuContainer = sidebar.querySelector(`.${MENU_CONTAINER_CLASS}`);
-    if (!menuContainer) {
-      console.warn('[SidebarUI] Menu container not found');
-      return;
-    }
+    const menuContainer = document.getElementById('sidebar-menu');
+
+if (!menuContainer) {
+  console.warn('[SidebarUI] Menu container not found');
+  return;
+}
 
     // Clear existing items
     menuContainer.innerHTML = '';
@@ -281,5 +282,6 @@
     updateRank: () => updateRankPanel(),
     updateRisk: () => updateRiskIndicator()
   };
+
 
 })();
