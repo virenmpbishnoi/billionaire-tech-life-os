@@ -73,7 +73,7 @@ const bus = window.EventBus;
       return JSON.parse(jsonString);
     } catch (err) {
       console.error('[Storage] Parse failure:', err.message);
-      eventbus?.emit('STORAGE_CORRUPTION_DETECTED', {
+      bus?.emit('STORAGE_CORRUPTION_DETECTED', {
         reason: 'invalid_json',
         key: 'unknown',
         error: err.message
@@ -167,7 +167,7 @@ const bus = window.EventBus;
 
         const parsed = safeParse(raw, null);
         if (parsed === null) {
-          eventbus?.emit('STORAGE_CORRUPTION_DETECTED', { key: fullKey, reason: 'parse_failed' });
+          bus?.emit('STORAGE_CORRUPTION_DETECTED', { key: fullKey, reason: 'parse_failed' });
           return null;
         }
 
@@ -182,7 +182,7 @@ const bus = window.EventBus;
         return parsed;
       } catch (err) {
         console.error('[Storage] Read error:', fullKey, err);
-        eventbus?.emit('STORAGE_READ_FAILURE', { key: fullKey, error: err.message });
+        bus?.emit('STORAGE_READ_FAILURE', { key: fullKey, error: err.message });
         return null;
       }
     },
@@ -202,7 +202,7 @@ const bus = window.EventBus;
         // Update cache
         readCache.set(fullKey, { data, timestamp: Date.now() });
 
-        eventbus?.emit('STORAGE_WRITE_SUCCESS', {
+        bus?.emit('STORAGE_WRITE_SUCCESS', {
           key: fullKey,
           size: json.length,
           timestamp: Date.now()
@@ -211,7 +211,7 @@ const bus = window.EventBus;
         return true;
       } catch (err) {
         console.error('[Storage] Write failed:', fullKey, err);
-        eventbus?.emit('STORAGE_WRITE_FAILURE', {
+        bus?.emit('STORAGE_WRITE_FAILURE', {
           key: fullKey,
           error: err.message,
           quotaExceeded: err.name === 'QuotaExceededError'
@@ -241,7 +241,7 @@ const bus = window.EventBus;
         return this.write(key, next, userId);
       } catch (err) {
         console.error('[Storage] Update failed:', key, err);
-        eventbus?.emit('STORAGE_UPDATE_FAILURE', { key, error: err.message });
+        bus?.emit('STORAGE_UPDATE_FAILURE', { key, error: err.message });
         return false;
       }
     },
@@ -251,7 +251,7 @@ const bus = window.EventBus;
       const fullKey = getFullKey(key, userId);
       localStorage.removeItem(fullKey);
       readCache.delete(fullKey);
-      eventbus?.emit('STORAGE_KEY_REMOVED', { key: fullKey });
+      bus?.emit('STORAGE_KEY_REMOVED', { key: fullKey });
     },
 
     exists(key, userId = null) {
@@ -268,7 +268,7 @@ const bus = window.EventBus;
           readCache.delete(key);
         }
       }
-      eventbus?.emit('STORAGE_USER_CLEARED', { userId });
+      bus?.emit('STORAGE_USER_CLEARED', { userId });
     },
 
     // ─── Snapshots & Backup ───────────────────────────────────────────────────
@@ -294,7 +294,7 @@ const bus = window.EventBus;
       this.write('lastSnapshot', snapshot);
       localStorage.setItem(snapshotKey, JSON.stringify(snapshot));
 
-      eventbus?.emit('STORAGE_BACKUP_CREATED', {
+      bus?.emit('STORAGE_BACKUP_CREATED', {
         timestamp: snapshot.timestamp,
         size: JSON.stringify(snapshot).length
       });
@@ -325,7 +325,7 @@ const bus = window.EventBus;
         }
       });
 
-      eventbus?.emit('STORAGE_RESTORE_SUCCESS', {
+      bus?.emit('STORAGE_RESTORE_SUCCESS', {
         timestamp: snapshot.timestamp,
         keysRestored: Object.keys(snapshot.data).length
       });
@@ -372,7 +372,7 @@ const bus = window.EventBus;
         }
       }
       if (issues.length > 0) {
-        eventbus?.emit('STORAGE_CORRUPTION_DETECTED', { issues });
+        bus?.emit('STORAGE_CORRUPTION_DETECTED', { issues });
       }
       return issues;
     }
@@ -392,9 +392,10 @@ const bus = window.EventBus;
     Storage.detectCorruption();
     const size = Storage.getStorageSize();
     if (size > 4_000_000) { // ~4MB warning
-      eventbus?.emit('STORAGE_QUOTA_WARNING', { size });
+      bus?.emit('STORAGE_QUOTA_WARNING', { size });
     }
   }, 300_000);
 
 })();
+
 
