@@ -1,499 +1,301 @@
 /*
  * 11-eventbus.js
- * Central Event Communication Backbone
- * Billionaire Tech Adaptive Life OS
- * FULL REBUILD – Production Event Architecture
+ * Central Event Communication Backbone – Billionaire Tech Adaptive Life OS
+ *
+ * Single pub/sub system for the entire application.
+ * All engines, UI modules, and core utilities MUST communicate ONLY through EventBus.
+ * Direct function calls between modules are strictly forbidden.
+ *
+ * Features:
+ * - Priority-based listener execution
+ * - Once-only listeners
+ * - Async event emission support
+ * - Recursion loop protection
+ * - Debug logging mode
+ * - Event metrics & inspection
+ * - Graceful error handling in listeners
+ *
+ * Version: 1.0.0 – March 2026
  */
 
-(function(){
+(function () {
+  'use strict';
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // CONFIGURATION & CONSTANTS
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  const DEFAULT_PRIORITY = 50;
+  const MAX_RECURSION_DEPTH = 20;
+  const DEBUG_PREFIX = '[EventBus]';
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // INTERNAL STATE
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  const listeners = new Map();          // eventName → [{listener, priority, once}]
+  const eventStack = [];                // recursion detection
+  let debugEnabled = false;
+  let eventMetrics = new Map();         // eventName → {count, lastEmitted, avgListeners}
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // INTERNAL HELPERS
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  function normalizeEventName(name) {
+    if (typeof name !== 'string' || !name.trim()) {
+      throw new Error('Event name must be a non-empty string');
+    }
+    return name.trim();
+  }
+
+  function getOrCreateListeners(eventName) {
+    if (!listeners.has(eventName)) {
+      listeners.set(eventName, []);
+    }
+    return listeners.get(eventName);
+  }
+
+  function sortListenersByPriority(list) {
+    return list.slice().sort((a, b) => b.priority - a.priority); // descending priority
+  }
+
+  function updateMetrics(eventName, listenerCount) {
+    if (!eventMetrics.has(eventName)) {
+      eventMetrics.set(eventName, { count: 0, lastEmitted: 0, avgListeners: 0 });
+    }
+    const m = eventMetrics.get(eventName);
+    m.count++;
+    m.lastEmitted = Date.now();
+    m.avgListeners = ((m.avgListeners * (m.count - 1)) + listenerCount) / m.count;
+  }
+
+  function logDebug(type, eventName, payload = null, extra = '') {
+    if (!debugEnabled) return;
+    const time = new Date().toISOString().slice(11, 23);
+    let msg = `${DEBUG_PREFIX} ${time} ${type} "${eventName}"`;
+    if (payload) msg += ` payload: ${JSON.stringify(payload, null, 2).slice(0, 100)}...`;
+    if (extra) msg += ` ${extra}`;
+    console.log(msg);
+  }
+
+  function detectRecursion(eventName) {
+    if (eventStack.includes(eventName)) {
+      const depth = eventStack.length;
+      const cycleStart = eventStack.indexOf(eventName);
+      const cycle = eventStack.slice(cycleStart);
+      console.warn(`${DEBUG_PREFIX} Recursion detected (depth ${depth})`, cycle);
+      return true;
+    }
+    if (eventStack.length >= MAX_RECURSION_DEPTH) {
+      console.error(`${DEBUG_PREFIX} Max recursion depth exceeded`);
+      return true;
+    }
+    return false;
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // PUBLIC EVENTBUS API
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  const EventBus = {
+
+    // ─── Initialization ───────────────────────────────────────────────────────
+    init() {
+      listeners.clear();
+      eventStack.length = 0;
+      eventMetrics.clear();
+      debugEnabled = false;
+      console.log('[EventBus] Initialized');
+    },
+
+    // ─── Subscribe ────────────────────────────────────────────────────────────
+    on(eventName, listener, options = {}) {
+      eventName = normalizeEventName(eventName);
+
+      if (typeof listener !== 'function') {
+        throw new Error('Listener must be a function');
+      }
+
+      const priority = Number(options.priority) || DEFAULT_PRIORITY;
+      const once = !!options.once;
 
-'use strict';
+      const entry = { listener, priority, once };
+      getOrCreateListeners(eventName).push(entry);
 
-/* ---------------------------------------------------------
-CONFIG
---------------------------------------------------------- */
-
-const DEFAULT_PRIORITY = 50;
-
-const MAX_RECURSION = 25;
-const MAX_QUEUE = 500;
-
-const EVENT_HISTORY_LIMIT = 500;
-
-const DEBUG_PREFIX = '[EventBus]';
-
-/* ---------------------------------------------------------
-STATE
---------------------------------------------------------- */
-
-const listeners = new Map();
-
-const eventQueue = [];
-
-const eventStack = [];
-
-const eventHistory = [];
-
-const eventMetrics = new Map();
-
-let processing = false;
-
-let debugEnabled = false;
-
-/* ---------------------------------------------------------
-UTILS
---------------------------------------------------------- */
-
-function normalize(name){
-
-if(typeof name!=='string' || !name.trim())
-throw new Error('Invalid event name');
-
-return name.trim();
-
-}
-
-function now(){
-
-return Date.now();
-
-}
-
-function log(...args){
-
-if(debugEnabled)
-console.log(DEBUG_PREFIX,...args);
-
-}
-
-function updateMetrics(name,count){
-
-if(!eventMetrics.has(name)){
-
-eventMetrics.set(name,{
-count:0,
-last:0,
-avgListeners:0
-});
-
-}
-
-const m = eventMetrics.get(name);
-
-m.count++;
-
-m.last = now();
-
-m.avgListeners =
-((m.avgListeners*(m.count-1))+count)/m.count;
-
-}
-
-/* ---------------------------------------------------------
-LISTENER MGMT
---------------------------------------------------------- */
-
-function getList(name){
-
-if(!listeners.has(name))
-listeners.set(name,[]);
-
-return listeners.get(name);
-
-}
-
-function sortListeners(list){
-
-return list
-.slice()
-.sort((a,b)=>b.priority-a.priority);
-
-}
-
-/* ---------------------------------------------------------
-RECURSION CHECK
---------------------------------------------------------- */
-
-function detectLoop(name){
-
-if(eventStack.includes(name)){
-
-console.warn(
-DEBUG_PREFIX,
-'Loop detected',
-eventStack,
-'->',
-name
-);
-
-return true;
-
-}
-
-if(eventStack.length>MAX_RECURSION){
-
-console.error(
-DEBUG_PREFIX,
-'Max recursion reached'
-);
-
-return true;
-
-}
-
-return false;
-
-}
-
-/* ---------------------------------------------------------
-QUEUE PROCESSOR
---------------------------------------------------------- */
-
-async function processQueue(){
-
-if(processing) return;
-
-processing = true;
-
-while(eventQueue.length){
-
-const item = eventQueue.shift();
-
-const {name,payload,async} = item;
-
-await dispatch(name,payload,async);
-
-}
-
-processing = false;
-
-}
-
-/* ---------------------------------------------------------
-DISPATCH
---------------------------------------------------------- */
-
-async function dispatch(name,payload,isAsync){
-
-if(detectLoop(name))
-return false;
-
-eventStack.push(name);
-
-const list = listeners.get(name);
-
-if(!list){
-
-eventStack.pop();
-return false;
-
-}
-
-const ordered = sortListeners(list);
-
-updateMetrics(name,ordered.length);
-
-const promises = [];
-
-for(const entry of ordered){
-
-const {fn,once} = entry;
-
-try{
-
-const result = fn(payload,name);
-
-if(isAsync && result instanceof Promise)
-promises.push(result);
-
-if(once)
-EventBus.off(name,fn);
-
-}catch(err){
-
-console.error(
-DEBUG_PREFIX,
-'Listener failed',
-name,
-err
-);
-
-}
-
-}
-
-if(isAsync && promises.length){
-
-await Promise.allSettled(promises);
-
-}
-
-eventStack.pop();
-
-eventHistory.push({
-name,
-timestamp:now(),
-listeners:ordered.length
-});
-
-if(eventHistory.length>EVENT_HISTORY_LIMIT)
-eventHistory.shift();
-
-return true;
-
-}
-
-/* ---------------------------------------------------------
-API
---------------------------------------------------------- */
-
-const EventBus = {
-
-/* ---------------- INIT ---------------- */
-
-init(){
-
-listeners.clear();
-
-eventQueue.length = 0;
-
-eventStack.length = 0;
-
-eventMetrics.clear();
-
-eventHistory.length = 0;
-
-processing = false;
-
-console.log('[EventBus] Ready');
-
-},
-
-/* ---------------- SUBSCRIBE ---------------- */
-
-on(name,fn,options={}){
-
-name = normalize(name);
-
-if(typeof fn!=='function')
-throw new Error('Listener must be function');
-
-const priority =
-Number(options.priority) || DEFAULT_PRIORITY;
-
-const once = !!options.once;
-
-const entry = {fn,priority,once};
-
-getList(name).push(entry);
-
-log('subscribe',name,priority);
-
-return ()=>this.off(name,fn);
-
-},
-
-once(name,fn,opt={}){
-
-return this.on(name,fn,{
-...opt,
-once:true
-});
-
-},
-
-/* ---------------- UNSUBSCRIBE ---------------- */
-
-off(name,fn){
-
-if(!name){
-
-listeners.clear();
-return;
-
-}
-
-name = normalize(name);
-
-if(!listeners.has(name))
-return;
-
-if(!fn){
-
-listeners.delete(name);
-return;
-
-}
-
-const list = listeners.get(name);
-
-const filtered =
-list.filter(e=>e.fn!==fn);
-
-if(filtered.length)
-listeners.set(name,filtered);
-else
-listeners.delete(name);
-
-},
-
-/* ---------------- EMIT ---------------- */
-
-emit(name,payload={}){
-
-name = normalize(name);
-
-if(eventQueue.length>MAX_QUEUE){
-
-console.warn(
-DEBUG_PREFIX,
-'Event flood protection triggered'
-);
-
-return false;
-
-}
-
-eventQueue.push({
-name,
-payload,
-async:false
-});
-
-processQueue();
-
-return true;
-
-},
-
-/* ---------------- EMIT ASYNC ---------------- */
-
-emitAsync(name,payload={}){
-
-name = normalize(name);
-
-eventQueue.push({
-name,
-payload,
-async:true
-});
-
-processQueue();
-
-return true;
-
-},
-
-/* ---------------- INSPECT ---------------- */
-
-hasListeners(name){
-
-return listeners.has(normalize(name));
-
-},
-
-listeners(name){
-
-return (listeners.get(normalize(name))||[])
-.map(l=>({
-priority:l.priority,
-once:l.once
-}));
-
-},
-
-events(){
-
-return Array.from(listeners.keys());
-
-},
-
-metrics(){
-
-return Object.fromEntries(eventMetrics);
-
-},
-
-history(){
-
-return eventHistory.slice();
-
-},
-
-/* ---------------- DEBUG ---------------- */
-
-enableDebug(){
-
-debugEnabled = true;
-
-console.log('[EventBus] Debug ON');
-
-},
-
-disableDebug(){
-
-debugEnabled = false;
-
-},
-
-clear(){
-
-listeners.clear();
-
-eventQueue.length=0;
-
-eventHistory.length=0;
-
-eventMetrics.clear();
-
-}
-
-};
-
-/* ---------------------------------------------------------
-EXPORT
---------------------------------------------------------- */
-
-window.EventBus = EventBus;
-
-/* ---------------------------------------------------------
-INIT
---------------------------------------------------------- */
-
-EventBus.init();
-
-/* ---------------------------------------------------------
-DEBUG TOOL
---------------------------------------------------------- */
-
-window.__eventbus = {
-
-on:EventBus.on.bind(EventBus),
-emit:EventBus.emit.bind(EventBus),
-
-events:()=>EventBus.events(),
-
-metrics:()=>EventBus.metrics(),
-
-history:()=>EventBus.history()
-
-};
-
-/* ---------------------------------------------------------
-DEBUG METRICS LOGGER
---------------------------------------------------------- */
-
-setInterval(()=>{
-
-if(!debugEnabled)
-return;
-
-console.group('[EventBus Metrics]');
-
-console.table(EventBus.metrics());
-
-console.groupEnd();
-
-},300000);
+      logDebug('SUBSCRIBE', eventName, null, `priority=${priority}${once ? ' (once)' : ''}`);
+
+      return () => this.off(eventName, listener);
+    },
+
+    once(eventName, listener, options = {}) {
+      return this.on(eventName, listener, { ...options, once: true });
+    },
+
+    // ─── Unsubscribe ──────────────────────────────────────────────────────────
+    off(eventName, listener) {
+      if (!eventName) {
+        listeners.clear();
+        logDebug('CLEAR', 'ALL');
+        return;
+      }
+
+      eventName = normalizeEventName(eventName);
+
+      if (!listeners.has(eventName)) return;
+
+      if (!listener) {
+        listeners.delete(eventName);
+        logDebug('CLEAR', eventName);
+        return;
+      }
+
+      const list = listeners.get(eventName);
+      const filtered = list.filter(entry => entry.listener !== listener);
+
+      if (filtered.length === 0) {
+        listeners.delete(eventName);
+      } else {
+        listeners.set(eventName, filtered);
+      }
+
+      logDebug('UNSUBSCRIBE', eventName);
+    },
+
+    // ─── Emit (synchronous) ───────────────────────────────────────────────────
+    emit(eventName, payload = {}) {
+      eventName = normalizeEventName(eventName);
+
+      if (detectRecursion(eventName)) return false;
+
+      eventStack.push(eventName);
+      logDebug('EMIT', eventName, payload);
+
+      if (!listeners.has(eventName)) {
+        eventStack.pop();
+        return false;
+      }
+
+      const list = sortListenersByPriority(listeners.get(eventName));
+      let success = true;
+
+      updateMetrics(eventName, list.length);
+
+      for (const { listener, once } of list) {
+        try {
+          listener(payload, eventName);
+          if (once) {
+            this.off(eventName, listener);
+          }
+        } catch (err) {
+          console.error(`${DEBUG_PREFIX} Listener error on "${eventName}":`, err);
+          success = false;
+          // Continue to next listeners – do not crash system
+        }
+      }
+
+      eventStack.pop();
+      return success;
+    },
+
+    // ─── Emit Async (await all listeners) ─────────────────────────────────────
+    async emitAsync(eventName, payload = {}) {
+      eventName = normalizeEventName(eventName);
+
+      if (detectRecursion(eventName)) return false;
+
+      eventStack.push(eventName);
+      logDebug('EMIT_ASYNC', eventName, payload);
+
+      if (!listeners.has(eventName)) {
+        eventStack.pop();
+        return false;
+      }
+
+      const list = sortListenersByPriority(listeners.get(eventName));
+      updateMetrics(eventName, list.length);
+
+      const promises = [];
+
+      for (const { listener, once } of list) {
+        try {
+          const result = listener(payload, eventName);
+          if (result && typeof result.then === 'function') {
+            promises.push(result);
+          }
+          if (once) {
+            this.off(eventName, listener);
+          }
+        } catch (err) {
+          console.error(`${DEBUG_PREFIX} Async listener error on "${eventName}":`, err);
+        }
+      }
+
+      await Promise.allSettled(promises);
+
+      eventStack.pop();
+      return true;
+    },
+
+    // ─── Inspection & Debug ───────────────────────────────────────────────────
+    hasListeners(eventName) {
+      return listeners.has(normalizeEventName(eventName));
+    },
+
+    getListeners(eventName) {
+      const list = listeners.get(normalizeEventName(eventName)) || [];
+      return list.map(({ priority, once }) => ({ priority, once }));
+    },
+
+    getRegisteredEvents() {
+      return Array.from(listeners.keys());
+    },
+
+    getEventMetrics() {
+      return Object.fromEntries(eventMetrics);
+    },
+
+    enableDebug() {
+      debugEnabled = true;
+      console.log('[EventBus] Debug mode enabled');
+    },
+
+    disableDebug() {
+      debugEnabled = false;
+      console.log('[EventBus] Debug mode disabled');
+    },
+
+    clearAll() {
+      listeners.clear();
+      eventMetrics.clear();
+      logDebug('CLEAR_ALL');
+    }
+  };
+
+  // ─────────────────────────────────────────────────────────────────────────────
+  // GLOBAL EXPOSURE & AUTO-INIT
+  // ─────────────────────────────────────────────────────────────────────────────
+
+  window.EventBus = EventBus;
+
+  // Auto-init
+  EventBus.init();
+
+  // Debug helpers (remove or gate in production)
+  window.__debugEventBus = {
+    on: EventBus.on.bind(EventBus),
+    emit: EventBus.emit.bind(EventBus),
+    metrics: () => EventBus.getEventMetrics(),
+    events: () => EventBus.getRegisteredEvents()
+  };
+
+  // Periodic metrics log (every 5 minutes in debug)
+  setInterval(() => {
+    if (debugEnabled) {
+      console.group('[EventBus] Metrics');
+      console.table(EventBus.getEventMetrics());
+      console.groupEnd();
+    }
+  }, 300_000);
 
 })();
