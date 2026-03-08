@@ -397,4 +397,22 @@
 /* Prevent content jump when scrollbar appears/disappears */
 html.has-scrollbar {
   scrollbar-gutter: stable;
+
+}
+/* SIDEBAR LAYOUT */
+
+.app-sidebar{
+  width:220px;
+  height:100vh;
+  background:#1e293b;
+  border-right:1px solid #334155;
+  position:fixed;
+  left:0;
+  top:0;
+  padding-top:20px;
+}
+
+.app-main{
+  margin-left:220px;
+  padding:20px;
 }
