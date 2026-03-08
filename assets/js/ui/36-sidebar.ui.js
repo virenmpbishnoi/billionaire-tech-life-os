@@ -24,7 +24,7 @@
   // ─────────────────────────────────────────────────────────────────────────────
 
   const SIDEBAR_ID = 'sidebar';
-  const MENU_CONTAINER_CLASS = 'sidebar-menu';
+  const MENU_CONTAINER_ID = 'sidebar-menu';
   const COLLAPSE_BTN_CLASS = 'sidebar-collapse-toggle';
   const RANK_PANEL_CLASS = 'sidebar-rank-panel';
   const RISK_INDICATOR_CLASS = 'sidebar-risk-indicator';
@@ -55,20 +55,20 @@
   // ─────────────────────────────────────────────────────────────────────────────
 
   function getSidebar() {
+  if (!sidebarElement) {
+    sidebarElement = document.getElementById(SIDEBAR_ID);
     if (!sidebarElement) {
-      sidebarElement = document.getElementById(SIDEBAR_ID);
-      if (!sidebarElement) {
-        console.error('[SidebarUI] Sidebar container not found: #sidebar');
-      }
+      console.error('[SidebarUI] Sidebar container not found: #sidebar');
     }
-    return sidebarElement;
   }
+  return sidebarElement;
+}
 
   function renderMenuItems() {
     const sidebar = getSidebar();
     if (!sidebar) return;
 
-    const menuContainer = document.getElementById('sidebar-menu');
+    const menuContainer = document.getElementById(MENU_CONTAINER_ID);
 
 if (!menuContainer) {
   console.warn('[SidebarUI] Menu container not found');
@@ -285,3 +285,4 @@ if (!menuContainer) {
 
 
 })();
+
