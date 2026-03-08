@@ -18,6 +18,7 @@
 (function () {
   'use strict';
 
+  const bus = window.EventBus;
   // ─────────────────────────────────────────────────────────────────────────────
   // CONFIGURATION & CONSTANTS
   // ─────────────────────────────────────────────────────────────────────────────
@@ -283,5 +284,6 @@
 
   // Debug helper
   window.__debugRecalc = () => console.table(Recalculation.getMetrics());
+
 
 })();
