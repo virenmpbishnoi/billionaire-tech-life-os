@@ -244,9 +244,26 @@
 
       Storage.write(`user:${user.userId}:risk:history`, normalized);
     },
+    // ─────────────────────────────
+// Utility Functions
+// ─────────────────────────────
+function weightedAverage(values, weights) {
+  let sum = 0;
+  let weightSum = 0;
 
-    // ─── Core risk recalculation – aggregates domain risks ────────────────────
-    recalculateRisk() {
+  for (const key in values) {
+    const value = Number(values[key]) || 0;
+    const weight = Number(weights[key]) || 0;
+    sum += value * weight;
+    weightSum += weight;
+  }
+  if (weightSum === 0) return 0;
+  return sum / weightSum;
+}
+// ─────────────────────────────
+// Core risk recalculation – aggregates domain risks
+// ─────────────────────────────
+recalculateRisk() {
       try {
         const prodRisk    = detectProductivityRisk();
         const discRisk    = detectDisciplineRisk();
@@ -371,5 +388,6 @@
     recalculate: () => RiskEngine.recalculateRisk(),
     metrics: () => RiskEngine.getRiskMetrics()
   };
+
 
 })();
