@@ -50,7 +50,9 @@
   let viewHistory = [];               // array of { viewId, timestamp, from }
   let isTransitioning = false;
 
-  const panel = document.getElementById(EXECUTION_PANEL_ID);
+  function getPanel() {
+  return document.getElementById(EXECUTION_PANEL_ID);
+}
 
   if (!panel) {
     console.error('[ViewManager] Execution panel not found – #execution-panel missing');
@@ -271,5 +273,6 @@
     history: () => ViewManager.getViewHistory(),
     reload: () => ViewManager.reloadCurrentView()
   };
+
 
 })();
