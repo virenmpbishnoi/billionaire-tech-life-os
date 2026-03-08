@@ -34,7 +34,10 @@
     habits: [],                     // Array<Habit>
     missions: [],                   // Array<Mission>
     finance: { balance: 0, history: [] },
-    health: { energy: 100, stress: 0, ... },
+    health: {
+  energy: 100,
+  stress: 0
+},
     targets: [],                    // Array<Target>
     streak: { current: 0, longest: 0, history: [] },
     score: { total: 0, breakdown: {} },
@@ -317,3 +320,4 @@
   }, 30000);
 
 })();
+
