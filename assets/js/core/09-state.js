@@ -19,7 +19,7 @@
 (function () {
   'use strict';
 
-  const bus = window.EventBus;
+  const bus = window.EventBus || null;
 
   // ─────────────────────────────────────────────────────────────────────────────
   // PRIVATE STATE & CONSTANTS
@@ -326,6 +326,7 @@
   }, 30000);
 
 })();
+
 
 
 
