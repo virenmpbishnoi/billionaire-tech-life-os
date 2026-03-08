@@ -18,9 +18,10 @@
  * Version: 1.0.0 – March 2026
  * Deployment: GitHub Pages compatible (localStorage only)
  */
-
 (function () {
-  'use strict';
+'use strict';
+
+const bus = window.EventBus;
 
   // ─────────────────────────────────────────────────────────────────────────────
   // CONFIGURATION & CONSTANTS
@@ -396,3 +397,4 @@
   }, 300_000);
 
 })();
+
