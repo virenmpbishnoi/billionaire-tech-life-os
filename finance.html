@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="default">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Finance – Adaptive Life OS"/>
+  <title>Finance – Adaptive Life OS</title>
+
+  <!-- Favicon & Meta -->
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon"/>
+  <meta name="theme-color" content="#0f172a"/>
+
+  <!-- CSS Loading Order – Critical: Do NOT change -->
+  <link rel="stylesheet" href="assets/css/01-variables.css"/>
+  <link rel="stylesheet" href="assets/css/02-base.css"/>
+  <link rel="stylesheet" href="assets/css/03-layout.css"/>
+  <link rel="stylesheet" href="assets/css/04-components.css"/>
+  <link rel="stylesheet" href="assets/css/05-animations.css"/>
+  <link rel="stylesheet" href="assets/css/06-responsive.css"/>
+  <link rel="stylesheet" href="assets/css/07-themes.css"/>
+
+  <style>
+    /* Minimal inline critical CSS for fast paint */
+    body {
+      margin: 0;
+      font-family: var(--bt-font-family-primary);
+      background: var(--bt-color-bg-main);
+      color: var(--bt-color-text-primary);
+      min-height: 100vh;
+    }
+    .finance-container {
+      max-width: var(--bt-container-max);
+      margin: 0 auto;
+      padding: var(--bt-space-xl);
+    }
+    .finance-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--bt-space-2xl);
+    }
+    .finance-controls {
+      display: flex;
+      gap: var(--bt-space-lg);
+      margin-bottom: var(--bt-space-xl);
+      flex-wrap: wrap;
+    }
+    .finance-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--bt-space-lg);
+      margin-bottom: var(--bt-space-2xl);
+    }
+    .finance-card {
+      background: var(--bt-color-bg-card);
+      border-radius: var(--bt-radius-lg);
+      padding: var(--bt-space-lg);
+      border: 1px solid var(--bt-color-border);
+      box-shadow: var(--bt-shadow-md);
+      text-align: center;
+    }
+    .finance-card-value {
+      font-size: var(--bt-font-size-3xl);
+      font-weight: var(--bt-font-weight-bold);
+      margin: var(--bt-space-sm) 0;
+    }
+    .finance-card-label {
+      color: var(--bt-color-text-secondary);
+    }
+    .transaction-list {
+      background: var(--bt-color-bg-card);
+      border-radius: var(--bt-radius-lg);
+      border: 1px solid var(--bt-color-border);
+      overflow: hidden;
+    }
+    .transaction-item {
+      padding: var(--bt-space-md) var(--bt-space-lg);
+      border-bottom: 1px solid var(--bt-color-border);
+      display: flex;
+      align-items: center;
+      gap: var(--bt-space-lg);
+    }
+    .transaction-item:last-child {
+      border-bottom: none;
+    }
+    .transaction-type {
+      font-weight: var(--bt-font-weight-semibold);
+      min-width: 80px;
+    }
+    .transaction-amount {
+      font-weight: var(--bt-font-weight-bold);
+      min-width: 100px;
+      text-align: right;
+    }
+    .income { color: var(--bt-color-success); }
+    .expense { color: var(--bt-color-danger); }
+    .loading-state {
+      text-align: center;
+      padding: var(--bt-space-3xl);
+      color: var(--bt-color-text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Finance Container -->
+  <div class="finance-container">
+
+    <!-- Header -->
+    <header class="finance-header">
+      <h1>Finance Dashboard</h1>
+      <div class="finance-stats">
+        <span>Net Worth: <strong id="net-worth">$0</strong></span>
+        <span>Monthly Savings Rate: <strong id="savings-rate">0%</strong></span>
+        <span>Wealth Index: <strong id="wealth-index">0</strong></span>
+      </div>
+    </header>
+
+    <!-- Controls -->
+    <section class="finance-controls">
+      <button id="add-income-btn" class="btn btn-success">+ Add Income</button>
+      <button id="add-expense-btn" class="btn btn-danger">+ Add Expense</button>
+      <input type="text" id="transaction-search" class="input" placeholder="Search transactions..."/>
+      <select id="transaction-filter" class="select">
+        <option value="all">All Transactions</option>
+        <option value="income">Income Only</option>
+        <option value="expense">Expenses Only</option>
+        <option value="monthly">This Month</option>
+        <option value="yearly">This Year</option>
+      </select>
+      <select id="category-filter" class="select">
+        <option value="all">All Categories</option>
+        <!-- Categories populated dynamically if needed -->
+      </select>
+    </section>
+
+    <!-- Summary Cards -->
+    <section class="finance-summary">
+      <div class="finance-card">
+        <div class="finance-card-label">Total Income</div>
+        <div id="total-income" class="finance-card-value">$0</div>
+      </div>
+      <div class="finance-card">
+        <div class="finance-card-label">Total Expenses</div>
+        <div id="total-expenses" class="finance-card-value">$0</div>
+      </div>
+      <div class="finance-card">
+        <div class="finance-card-label">Savings Rate</div>
+        <div id="savings-rate-card" class="finance-card-value">0%</div>
+      </div>
+      <div class="finance-card">
+        <div class="finance-card-label">Net Balance</div>
+        <div id="net-balance" class="finance-card-value">$0</div>
+      </div>
+    </section>
+
+    <!-- Transaction List -->
+    <section id="finance-transactions" class="transaction-list">
+      <!-- Transactions populated dynamically -->
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading transactions...</p>
+      </div>
+    </section>
+
+    <!-- Savings Progress -->
+    <section id="savings-panel" class="analytics-section">
+      <h2>Savings Progress</h2>
+      <!-- Progress bar / chart placeholder -->
+    </section>
+
+    <!-- Finance Analytics -->
+    <section id="finance-analytics" class="analytics-section">
+      <h2>Financial Trends</h2>
+      <!-- Charts populated by charts.ui.js -->
+    </section>
+
+  </div>
+
+  <!-- Modal Root -->
+  <div id="modal-root"></div>
+
+  <!-- JavaScript Loading Order – Optimized for finance page -->
+  <!-- Core -->
+  <script src="assets/js/core/08-storage.js"></script>
+  <script src="assets/js/core/09-state.js"></script>
+  <script src="assets/js/core/10-versioning.js"></script>
+  <script src="assets/js/core/11-eventbus.js"></script>
+
+  <!-- Finance & Wealth Engines (core for this page) -->
+  <script src="assets/js/engine/20-finance.engine.js"></script>
+  <script src="assets/js/engine/26-wealth.engine.js"></script>
+
+  <!-- UI & Router -->
+  <script src="assets/js/ui/32-router.js"></script>
+  <script src="assets/js/ui/33-view.manager.js"></script>
+  <script src="assets/js/ui/35-dashboard.ui.js"></script>
+  <script src="assets/js/ui/36-sidebar.ui.js"></script>
+  <script src="assets/js/ui/37-header.ui.js"></script>
+  <script src="assets/js/ui/38-alerts.ui.js"></script>
+  <script src="assets/js/ui/39-modals.ui.js"></script>
+  <script src="assets/js/ui/40-charts.ui.js"></script>
+
+  <!-- Boot -->
+  <script src="assets/js/core/43-boot.js"></script>
+
+  <!-- Finance-specific script -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Update finance summary
+      function updateFinanceSummary() {
+        const stats = FinanceEngine?.getFinanceStats?.() || {};
+        document.getElementById("net-worth").textContent = `$${stats.netWorth?.toLocaleString() || 0}`;
+        document.getElementById("savings-rate").textContent = `${stats.monthlySummary?.net > 0 ? '+' : ''}${(stats.monthlySummary?.net / stats.monthlySummary?.income * 100 || 0).toFixed(1)}%`;
+        document.getElementById("wealth-index").textContent = stats.wealthIndex || 0;
+
+        document.getElementById("total-income").textContent = `$${stats.monthlySummary?.income?.toLocaleString() || 0}`;
+        document.getElementById("total-expenses").textContent = `$${stats.monthlySummary?.expense?.toLocaleString() || 0}`;
+        document.getElementById("net-balance").textContent = `$${stats.monthlySummary?.net?.toLocaleString() || 0}`;
+      }
+
+      // Render transaction list
+      function renderTransactionList() {
+        const list = document.getElementById("finance-transactions");
+        if (!list) return;
+
+        const transactions = FinanceEngine?.getTransactions?.() || [];
+        list.innerHTML = '';
+
+        if (transactions.length === 0) {
+          list.innerHTML = '<div class="loading-state"><p>No transactions yet. Start tracking your finances!</p></div>';
+          return;
+        }
+
+        transactions.forEach(tx => {
+          const item = document.createElement('div');
+          item.className = `transaction-item ${tx.type}`;
+          item.dataset.transactionId = tx.transactionId;
+
+          const amountClass = tx.type === 'income' ? 'income' : 'expense';
+          const amountSign = tx.type === 'income' ? '+' : '-';
+
+          item.innerHTML = `
+            <div class="transaction-type">${tx.type.toUpperCase()}</div>
+            <div class="transaction-title">${tx.title || tx.category}</div>
+            <div class="transaction-category">${tx.category}</div>
+            <div class="transaction-amount ${amountClass}">${amountSign}$${Math.abs(tx.amount).toLocaleString()}</div>
+            <button class="btn btn-small btn-danger delete-transaction" data-transaction-id="${tx.transactionId}">Delete</button>
+          `;
+
+          // Delete button
+          item.querySelector('.delete-transaction').addEventListener('click', () => {
+            if (confirm('Delete this transaction?')) {
+              // FinanceEngine?.deleteTransaction?.(tx.transactionId); // Add delete method if needed
+            }
+          });
+
+          list.appendChild(item);
+        });
+      }
+
+      // Event listeners
+      EventBus.on('FINANCE_INCOME_ADDED', () => {
+        renderTransactionList();
+        updateFinanceSummary();
+      });
+
+      EventBus.on('FINANCE_EXPENSE_ADDED', () => {
+        renderTransactionList();
+        updateFinanceSummary();
+      });
+
+      EventBus.on('FINANCE_INVESTMENT_ADDED', () => {
+        renderTransactionList();
+        updateFinanceSummary();
+      });
+
+      EventBus.on('WEALTH_UPDATED', updateFinanceSummary);
+
+      // Add income/expense buttons
+      document.getElementById("add-income-btn")?.addEventListener("click", () => {
+        ModalsUI?.open?.('addFinance', { type: 'income' });
+      });
+
+      document.getElementById("add-expense-btn")?.addEventListener("click", () => {
+        ModalsUI?.open?.('addFinance', { type: 'expense' });
+      });
+
+      // Initial render
+      updateFinanceSummary();
+      renderTransactionList();
+
+      // Hide loading when data ready
+      EventBus.on("BOOT_COMPLETE", () => {
+        document.querySelector(".loading-state")?.remove();
+      });
+    });
+  </script>
+
+</body>
+</html>

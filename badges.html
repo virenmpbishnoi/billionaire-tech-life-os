@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="default">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Achievements & Badges – Adaptive Life OS"/>
+  <title>Achievements & Badges – Adaptive Life OS</title>
+
+  <!-- Favicon & Meta -->
+  <link rel="icon" href="assets/favicon.ico" type="image/x-icon"/>
+  <meta name="theme-color" content="#0f172a"/>
+
+  <!-- CSS Loading Order – Critical: Do NOT change -->
+  <link rel="stylesheet" href="assets/css/01-variables.css"/>
+  <link rel="stylesheet" href="assets/css/02-base.css"/>
+  <link rel="stylesheet" href="assets/css/03-layout.css"/>
+  <link rel="stylesheet" href="assets/css/04-components.css"/>
+  <link rel="stylesheet" href="assets/css/05-animations.css"/>
+  <link rel="stylesheet" href="assets/css/06-responsive.css"/>
+  <link rel="stylesheet" href="assets/css/07-themes.css"/>
+
+  <style>
+    /* Minimal inline critical CSS for fast paint */
+    body {
+      margin: 0;
+      font-family: var(--bt-font-family-primary);
+      background: var(--bt-color-bg-main);
+      color: var(--bt-color-text-primary);
+      min-height: 100vh;
+    }
+    .badges-container {
+      max-width: var(--bt-container-max);
+      margin: 0 auto;
+      padding: var(--bt-space-xl);
+    }
+    .badges-header {
+      text-align: center;
+      margin-bottom: var(--bt-space-2xl);
+    }
+    .rank-panel {
+      background: var(--bt-color-bg-card);
+      border-radius: var(--bt-radius-lg);
+      padding: var(--bt-space-xl);
+      margin-bottom: var(--bt-space-2xl);
+      border: 1px solid var(--bt-color-border);
+      box-shadow: var(--bt-shadow-md);
+      text-align: center;
+    }
+    .rank-icon {
+      font-size: var(--bt-font-size-5xl);
+      margin-bottom: var(--bt-space-lg);
+    }
+    .rank-name {
+      font-size: var(--bt-font-size-3xl);
+      font-weight: var(--bt-font-weight-bold);
+      margin-bottom: var(--bt-space-md);
+    }
+    .rank-progress {
+      height: 12px;
+      background: var(--bt-color-bg-surface);
+      border-radius: var(--bt-radius-pill);
+      overflow: hidden;
+      margin-bottom: var(--bt-space-md);
+    }
+    .rank-progress-bar {
+      height: 100%;
+      background: var(--bt-color-primary);
+      transition: width var(--bt-animation-medium);
+    }
+    .badge-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: var(--bt-space-lg);
+      margin-bottom: var(--bt-space-2xl);
+    }
+    .badge-card {
+      background: var(--bt-color-bg-card);
+      border-radius: var(--bt-radius-lg);
+      padding: var(--bt-space-lg);
+      border: 1px solid var(--bt-color-border);
+      box-shadow: var(--bt-shadow-md);
+      text-align: center;
+    }
+    .badge-card-value {
+      font-size: var(--bt-font-size-3xl);
+      font-weight: var(--bt-font-weight-bold);
+      margin: var(--bt-space-sm) 0;
+    }
+    .badge-card-label {
+      color: var(--bt-color-text-secondary);
+    }
+    .badge-collection {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: var(--bt-space-lg);
+    }
+    .badge-item {
+      background: var(--bt-color-bg-card);
+      border-radius: var(--bt-radius-lg);
+      padding: var(--bt-space-lg);
+      text-align: center;
+      border: 1px solid var(--bt-color-border);
+      box-shadow: var(--bt-shadow-md);
+      opacity: 0.4; /* locked by default */
+    }
+    .badge-item.unlocked {
+      opacity: 1;
+      border-color: var(--bt-color-primary);
+      box-shadow: var(--bt-shadow-lg);
+    }
+    .badge-icon {
+      font-size: var(--bt-font-size-4xl);
+      margin-bottom: var(--bt-space-md);
+    }
+    .badge-title {
+      font-weight: var(--bt-font-weight-semibold);
+      margin-bottom: var(--bt-space-sm);
+    }
+    .badge-tier {
+      font-size: var(--bt-font-size-sm);
+      padding: var(--bt-space-xs) var(--bt-space-sm);
+      border-radius: var(--bt-radius-pill);
+    }
+    .loading-state {
+      text-align: center;
+      padding: var(--bt-space-3xl);
+      color: var(--bt-color-text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Badges Container -->
+  <div class="badges-container">
+
+    <!-- Header -->
+    <header class="badges-header">
+      <h1>Achievements & Badges</h1>
+      <p>Track your milestones and rewards across all life domains</p>
+    </header>
+
+    <!-- Rank Panel -->
+    <section id="rank-panel" class="rank-panel">
+      <div class="rank-icon">★</div>
+      <div id="current-rank" class="rank-name">Loading Rank...</div>
+      <div class="rank-progress">
+        <div id="rank-progress-bar" class="rank-progress-bar" style="width: 0%"></div>
+      </div>
+      <div id="rank-next" class="next-rank">Next Rank: Loading...</div>
+    </section>
+
+    <!-- Badge Summary -->
+    <section class="badge-summary">
+      <div class="badge-card">
+        <div class="badge-card-label">Total Badges</div>
+        <div id="total-badges" class="badge-card-value">0</div>
+      </div>
+      <div class="badge-card">
+        <div class="badge-card-label">Legendary Badges</div>
+        <div id="legendary-badges" class="badge-card-value">0</div>
+      </div>
+      <div class="badge-card">
+        <div class="badge-card-label">Recent Unlocks</div>
+        <div id="recent-unlocks" class="badge-card-value">0</div>
+      </div>
+      <div class="badge-card">
+        <div class="badge-card-label">Achievement Progress</div>
+        <div id="achievement-progress" class="badge-card-value">0%</div>
+      </div>
+    </section>
+
+    <!-- Badge Collection -->
+    <section id="badge-collection" class="badge-collection">
+      <!-- Badges populated dynamically -->
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading achievements...</p>
+      </div>
+    </section>
+
+    <!-- Milestone Overview -->
+    <section id="milestone-panel" class="analytics-section">
+      <h2>Major Milestones</h2>
+      <!-- Milestone badges or progress visualization -->
+    </section>
+
+    <!-- Badge Analytics -->
+    <section id="badge-analytics" class="analytics-section">
+      <h2>Achievement Trends</h2>
+      <!-- Charts populated by charts.ui.js -->
+    </section>
+
+  </div>
+
+  <!-- Modal Root -->
+  <div id="modal-root"></div>
+
+  <!-- JavaScript Loading Order – Optimized for badges page -->
+  <!-- Core -->
+  <script src="assets/js/core/08-storage.js"></script>
+  <script src="assets/js/core/09-state.js"></script>
+  <script src="assets/js/core/10-versioning.js"></script>
+  <script src="assets/js/core/11-eventbus.js"></script>
+
+  <!-- Rank & Badge Engines (core for this page) -->
+  <script src="assets/js/engine/29-rank.engine.js"></script>
+  <script src="assets/js/engine/30-badge.engine.js"></script>
+
+  <!-- UI & Router -->
+  <script src="assets/js/ui/32-router.js"></script>
+  <script src="assets/js/ui/33-view.manager.js"></script>
+  <script src="assets/js/ui/35-dashboard.ui.js"></script>
+  <script src="assets/js/ui/36-sidebar.ui.js"></script>
+  <script src="assets/js/ui/37-header.ui.js"></script>
+  <script src="assets/js/ui/38-alerts.ui.js"></script>
+  <script src="assets/js/ui/39-modals.ui.js"></script>
+  <script src="assets/js/ui/40-charts.ui.js"></script>
+
+  <!-- Boot -->
+  <script src="assets/js/core/43-boot.js"></script>
+
+  <!-- Badges-specific script -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Update rank panel
+      function updateRankPanel() {
+        const rank = RankEngine?.getCurrentRank?.() || {};
+        document.getElementById("current-rank").textContent = rank.name || 'Beginner';
+        document.getElementById("rank-progress-bar").style.width = `${rank.progressToNext || 0}%`;
+        document.getElementById("rank-next").textContent = rank.nextRank ? `Next: ${rank.nextRank}` : 'Mastered';
+      }
+
+      // Render badge collection
+      function renderBadgeCollection() {
+        const collection = document.getElementById("badge-collection");
+        if (!collection) return;
+
+        const badges = BadgeEngine?.getUnlockedBadges?.() || [];
+        collection.innerHTML = '';
+
+        if (badges.length === 0) {
+          collection.innerHTML = '<div class="loading-state"><p>No badges unlocked yet. Keep pushing!</p></div>';
+          return;
+        }
+
+        badges.forEach(badge => {
+          const item = document.createElement('div');
+          item.className = 'badge-item unlocked';
+          item.dataset.badgeId = badge.badgeId;
+
+          item.innerHTML = `
+            <div class="badge-icon" style="color: var(--bt-badge-tier-${badge.tier || 1})">🏆</div>
+            <div class="badge-title">${badge.name}</div>
+            <div class="badge-tier">Tier ${badge.tier || 1}</div>
+            <div class="badge-unlock">Unlocked ${new Date(badge.unlockedAt).toLocaleDateString()}</div>
+          `;
+
+          collection.appendChild(item);
+        });
+      }
+
+      // Update summary
+      function updateBadgeSummary() {
+        const badges = BadgeEngine?.getUnlockedBadges?.() || [];
+        document.getElementById("total-badges").textContent = badges.length;
+        document.getElementById("legendary-badges").textContent = badges.filter(b => b.tier === 5).length;
+        document.getElementById("recent-unlocks").textContent = badges.filter(b => Date.now() - b.unlockedAt < 7*24*60*60*1000).length;
+
+        const progress = Math.round((badges.length / 50) * 100); // arbitrary total for demo
+        document.getElementById("achievement-progress").textContent = `${progress}%`;
+      }
+
+      // Event listeners
+      EventBus.on('BADGE_UNLOCKED', () => {
+        renderBadgeCollection();
+        updateBadgeSummary();
+      });
+
+      EventBus.on('RANK_UPDATED', updateRankPanel);
+      EventBus.on('RANK_PROMOTED', updateRankPanel);
+
+      // Initial render
+      updateRankPanel();
+      updateBadgeSummary();
+      renderBadgeCollection();
+
+      // Hide loading when data ready
+      EventBus.on("BOOT_COMPLETE", () => {
+        document.querySelector(".loading-state")?.remove();
+      });
+    });
+  </script>
+
+</body>
+</html>
