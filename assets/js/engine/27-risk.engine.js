@@ -172,9 +172,9 @@
     const streakRisk = brokenStreaks * 15;
     const taskRisk = abandonedTasks > 0 ? abandonedTasks * 8 : 0;
 
-    return clampRisk(streakRisk + taskRisk);
-  }
-  function weightedAverage(values, weights) {
+return clampRisk(streakRisk + taskRisk);
+};
+function weightedAverage(values, weights) {
   let sum = 0;
   let weightSum = 0;
 
