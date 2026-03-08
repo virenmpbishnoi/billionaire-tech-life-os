@@ -7,7 +7,7 @@
   <title>Adaptive Life OS – Billionaire Tech</title>
 
   <!-- Favicon & Meta -->
-  <link rel="icon" href="assets/favicon.ico" type="image/x-icon"/>
+  
   <meta name="theme-color" content="#0f172a"/>
 
   <!-- CSS Loading Order – Critical: Do NOT change -->
@@ -26,9 +26,10 @@
   <div class="app-root">
 
     <!-- Sidebar Navigation -->
-    <aside id="sidebar" class="app-sidebar">
-      <!-- Populated dynamically by sidebar.ui.js -->
-    </aside>
+<aside id="sidebar" class="app-sidebar">
+  <nav id="sidebar-menu"></nav>
+  <!-- Populated dynamically by sidebar.ui.js -->
+</aside>
 
     <!-- Main Content Area -->
     <main class="app-main" id="main-content">
@@ -51,7 +52,7 @@
       </div>
 
       <!-- Analytics & Charts Section -->
-      <section id="analytics-panel" class="analytics-container">
+      <section id="analytics-panel"></section>
         <!-- Chart wrappers populated by charts.ui.js -->
       </section>
 
@@ -76,7 +77,7 @@
 
   <!-- Toast & Alert Containers -->
   <div id="alert-toast-container"></div>
-  <div id="alert-panel"></div>
+  <div id="alert-warning-panel"></div>
 
   <!-- JavaScript Loading Order – Critical: Do NOT change -->
   <!-- Core Infrastructure -->
