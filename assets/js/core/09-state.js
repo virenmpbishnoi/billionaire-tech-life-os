@@ -212,7 +212,7 @@
       if (!options.silent) {
         isDirty = true;
         const diff = simpleDiff(previousState, currentState);
-        eventbus?.emit('STATE_UPDATED', {
+        bus?.emit('STATE_UPDATED', {
           type: 'merge',
           diff,
           timestamp: Date.now()
@@ -322,6 +322,7 @@
   }, 30000);
 
 })();
+
 
 
 
