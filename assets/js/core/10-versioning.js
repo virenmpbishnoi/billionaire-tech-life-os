@@ -191,12 +191,12 @@
       const schemaMismatch = compareVersions(SCHEMA_VERSION, stored.schemaVersion) !== 0;
 
       if (!appMismatch && !schemaMismatch) {
-        eventbus?.emit('VERSION_MATCH', stored);
+        EventBus.emit('VERSION_MATCH', stored);
         console.log('[Versioning] Versions match – ready');
         return true;
       }
 
-      eventbus?.emit('VERSION_MISMATCH', {
+      EventBus.emit('VERSION_MISMATCH', {
         currentApp: APP_VERSION,
         storedApp: stored.appVersion,
         currentSchema: SCHEMA_VERSION,
@@ -294,4 +294,5 @@
 
 
 })();
+
 
