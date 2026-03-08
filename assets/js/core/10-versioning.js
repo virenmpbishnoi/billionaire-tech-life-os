@@ -219,7 +219,6 @@
       return false;
     }
   }
-};
     
     getAppVersion() {
       return APP_VERSION;
@@ -268,7 +267,7 @@
     async rollbackMigration(targetVersion) {
       console.warn('[Versioning] Rollback requested to', targetVersion);
       // In production: restore snapshot + update version metadata
-      eventbus?.emit('VERSION_ROLLBACK_EXECUTED', { target: targetVersion });
+      EventBus.emit('VERSION_ROLLBACK_EXECUTED', { target: targetVersion });
     }
   };
 
@@ -294,6 +293,7 @@
 
 
 })();
+
 
 
 
