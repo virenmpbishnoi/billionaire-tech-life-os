@@ -27,7 +27,21 @@
 
 <!-- Sidebar Navigation -->
 <aside id="sidebar" class="app-sidebar">
-  <nav id="sidebar-menu"></nav>
+
+  <div class="sidebar-inner">
+
+    <!-- Scrollable Menu Area -->
+    <div class="sidebar-scroll">
+      <nav id="sidebar-menu"></nav>
+    </div>
+
+    <!-- Optional Footer -->
+    <div class="sidebar-footer">
+      <!-- footer items (rank, profile, logout etc) -->
+    </div>
+
+  </div>
+
 </aside>
 
     <!-- Main Content Area -->
@@ -131,6 +145,16 @@
   <script src="assets/js/core/46-migration.manager.js"></script>
   <script src="assets/js/core/47-reset.manager.js"></script>
 
+<!-- Final Boot Trigger -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    if (window.Boot) {
+      Boot.init();
+    } else {
+      console.error("Boot module not loaded");
+    }
+  });
+</script>
 
 </body>
 
