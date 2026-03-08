@@ -195,7 +195,7 @@
         return true;
       } catch (err) {
         console.error('[State] Update failed at path:', path, err);
-        eventbus?.emit('STATE_ERROR', { path, error: err.message });
+        bus?.emit('STATE_ERROR', { path, error: err.message });
         // Revert on fatal error
         currentState = deepClone(previousState);
         return false;
@@ -322,6 +322,7 @@
   }, 30000);
 
 })();
+
 
 
 
