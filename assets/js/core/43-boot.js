@@ -53,8 +53,7 @@
   let bootCompleted = false;
   let bootStartTime = 0;
   let currentStageIndex = -1;
-  let stageStartTime = 0;
-
+  
   const bootDiagnostics = {
     startTime: 0,
     endTime: 0,
@@ -87,15 +86,12 @@
     });
 
     console.error(`[Boot] Error in stage "${stageName}":`, err);
-    EventBus.emit('BOOT_ERROR', { stage: stageName, error: err.message });
+    EventBus?.emit('BOOT_ERROR', { stage: stageName, error: err.message });
   }
 
   function checkModuleAvailability(modules) {
-    return modules.every(mod => {
-      const name = mod.replace(/Engine$/, ''); // e.g. UserEngine → User
-      return !!window[name] || !!window[mod];
-    });
-  }
+  return modules.every(mod => !!window[mod]);
+}
 
   async function waitForModules(modules, timeoutMs = STAGE_TIMEOUT_MS) {
     return new Promise((resolve, reject) => {
@@ -140,7 +136,7 @@
       if (window.Recalculation) Recalculation.init?.();
 
       logStage(stageName, true, Date.now() - start);
-      EventBus.emit('BOOT_STAGE_COMPLETE', { stage: stageName, duration: Date.now() - start });
+      EventBus?.emit('BOOT_STAGE_COMPLETE', { stage: stageName, duration: Date.now() - start });
     } catch (err) {
       logError(err, stageName);
       throw err;
@@ -159,7 +155,7 @@
       if (window.AuthCrypto) AuthCrypto.init?.();
 
       logStage(stageName, true, Date.now() - start);
-      EventBus.emit('BOOT_STAGE_COMPLETE', { stage: stageName, duration: Date.now() - start });
+      EventBus?.emit('BOOT_STAGE_COMPLETE', { stage: stageName, duration: Date.now() - start });
     } catch (err) {
       logError(err, stageName);
       throw err;
@@ -187,7 +183,7 @@
       await StreakEngine.init?.();
 
       logStage(stageName, true, Date.now() - start);
-      EventBus.emit('BOOT_STAGE_COMPLETE', { stage: stageName, duration: Date.now() - start });
+      EventBus?.emit('BOOT_STAGE_COMPLETE', { stage: stageName, duration: Date.now() - start });
     } catch (err) {
       logError(err, stageName);
       throw err;
@@ -214,7 +210,7 @@
       await ThemeEngine.init?.();
 
       logStage(stageName, true, Date.now() - start);
-      EventBus.emit('BOOT_STAGE_COMPLETE', { stage: stageName, duration: Date.now() - start });
+      EventBus?.emit('BOOT_STAGE_COMPLETE', { stage: stageName, duration: Date.now() - start });
     } catch (err) {
       logError(err, stageName);
       throw err;
@@ -244,7 +240,7 @@
       await ManifestUI.init?.();
 
       logStage(stageName, true, Date.now() - start);
-      EventBus.emit('BOOT_STAGE_COMPLETE', { stage: stageName, duration: Date.now() - start });
+      EventBus?.emit('BOOT_STAGE_COMPLETE', { stage: stageName, duration: Date.now() - start });
     } catch (err) {
       logError(err, stageName);
       throw err;
@@ -260,7 +256,7 @@
       Router.navigate(window.location.pathname || '/dashboard', { replace: true });
 
       logStage(stageName, true, Date.now() - start);
-      EventBus.emit('BOOT_STAGE_COMPLETE', { stage: stageName, duration: Date.now() - start });
+      EventBus?.emit('BOOT_STAGE_COMPLETE', { stage: stageName, duration: Date.now() - start });
     } catch (err) {
       logError(err, stageName);
       throw err;
@@ -280,7 +276,7 @@
     const failed = checks.filter(c => !c.ok);
     if (failed.length > 0) {
       console.warn('[Boot] System health warning – failed checks:', failed.map(c => c.name));
-      EventBus.emit('BOOT_HEALTH_WARNING', { failed: failed.map(c => c.name) });
+      EventBus?.emit('BOOT_HEALTH_WARNING', { failed: failed.map(c => c.name) });
     }
   }
 
@@ -291,30 +287,40 @@
   const Boot = {
 
     async init() {
-      if (this.started === true) {
-  return;
-}
 
-      bootStarted = true;
-      bootStartTime = Date.now();
+  if (bootStarted) return;
 
-      EventBus.emit('BOOT_START', { timestamp: bootStartTime });
+  bootStarted = true;
+  bootStartTime = Date.now();
 
-      try {
-        const bootTimeout = setTimeout(() => {
-          console.error('[Boot] System boot timeout after', (Date.now() - bootStartTime)/1000, 'seconds');
-          EventBus.emit('BOOT_ERROR', { reason: 'timeout' });
-        }, BOOT_TIMEOUT_MS);
+  EventBus?.emit('BOOT_START', { timestamp: bootStartTime });
 
-        // Sequential stages
-        await initializeCore();
-        await initializeAuth();
-        await initializeEngines();
-        await initializeIntelligenceEngines();
-        await initializeUI();
-        await activateRouter();
+  try {
 
-        clearTimeout(bootTimeout);
+    const bootTimeout = setTimeout(() => {
+      console.error('[Boot] System boot timeout after', (Date.now() - bootStartTime)/1000, 'seconds');
+      EventBus?.emit('BOOT_ERROR', { reason: 'timeout' });
+    }, BOOT_TIMEOUT_MS);
+
+    currentStageIndex = 0;
+    await initializeCore();
+
+    currentStageIndex = 1;
+    await initializeAuth();
+
+    currentStageIndex = 2;
+    await initializeEngines();
+
+    currentStageIndex = 3;
+    await initializeIntelligenceEngines();
+
+    currentStageIndex = 4;
+    await initializeUI();
+
+    currentStageIndex = 5;
+    await activateRouter();
+
+    clearTimeout(bootTimeout);
 
         bootCompleted = true;
         const duration = Date.now() - bootStartTime;
@@ -322,7 +328,7 @@
         bootDiagnostics.endTime = Date.now();
         bootDiagnostics.totalDuration = duration;
 
-        EventBus.emit('BOOT_COMPLETE', {
+        EventBus?.emit('BOOT_COMPLETE', {
           duration,
           timestamp: Date.now(),
           diagnostics: bootDiagnostics
@@ -333,7 +339,7 @@
         console.log(`[Boot] System fully initialized in ${duration}ms`);
       } catch (err) {
         logError(err, 'boot-fatal');
-        EventBus.emit('BOOT_ERROR', { error: err.message, stage: currentStageIndex >= 0 ? BOOT_STAGES[currentStageIndex].name : 'unknown' });
+        EventBus?.emit('BOOT_ERROR', { error: err.message, stage: currentStageIndex >= 0 ? BOOT_STAGES[currentStageIndex].name : 'unknown' });
 
         // Fallback UI (minimal safe mode)
         document.body.innerHTML = `
@@ -365,7 +371,7 @@
 
   // Trigger boot when core dependencies are ready
   function tryBoot() {
-    if (window.Storage && window.State && window.Versioning && window.EventBus) {
+    if (window.Storage && window.State && window.EventBus) {
       Boot.init();
     } else {
       setTimeout(tryBoot, 50);
@@ -382,3 +388,4 @@
 
 
 })();
+
