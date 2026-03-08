@@ -133,7 +133,7 @@ const bus = window.EventBus;
       const storedSchema = localStorage.getItem(STORAGE_KEYS.SCHEMA_VERSION);
       if (storedSchema !== CURRENT_SCHEMA_VERSION) {
         console.warn('[Storage] Schema version mismatch – migration needed');
-        // eventbus.emit('SCHEMA_MIGRATION_NEEDED', { from: storedSchema, to: CURRENT_SCHEMA_VERSION });
+        // bus?.emit('SCHEMA_MIGRATION_NEEDED', { from: storedSchema, to: CURRENT_SCHEMA_VERSION });
       }
 
       clearCache();
@@ -397,5 +397,6 @@ const bus = window.EventBus;
   }, 300_000);
 
 })();
+
 
 
