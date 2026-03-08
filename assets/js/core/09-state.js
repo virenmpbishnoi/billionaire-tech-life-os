@@ -182,7 +182,7 @@
         if (!options.silent) {
           isDirty = true;
           const diff = simpleDiff(previousState, currentState);
-          eventbus?.emit('STATE_UPDATED', {
+          bus?.emit('STATE_UPDATED', {
             path,
             previous: oldValue,
             next: newValue,
@@ -322,6 +322,7 @@
   }, 30000);
 
 })();
+
 
 
 
