@@ -123,12 +123,12 @@
 
     if (recalcDepth > MAX_RECURSION_DEPTH) {
       console.error('[Recalc] Max recursion depth exceeded – aborting');
-      bus.emit('RECALCULATION_FAILED', { reason: 'recursion_limit' });
+      bus?.emit('RECALCULATION_FAILED', { reason: 'recursion_limit' });
       cleanup();
       return;
     }
 
-    bus.emit('RECALCULATION_STARTED', {
+    bus?.emit('RECALCULATION_STARTED', {
       triggers: Array.from(recalcQueue),
       depth: recalcDepth,
       timestamp: Date.now()
@@ -186,7 +186,7 @@
 
       lastRecalcTime = Date.now();
 
-      bus.emit('RECALCULATION_COMPLETED', {
+      bus?.emit('RECALCULATION_COMPLETED', {
         duration,
         affectedStages: Array.from(affected),
         triggers: Array.from(recalcQueue),
@@ -195,7 +195,7 @@
 
     } catch (fatal) {
       console.error('[Recalc] Fatal pipeline error:', fatal);
-      bus.emit('RECALCULATION_FAILED', { reason: 'pipeline_error', error: fatal.message });
+      bus?.emit('RECALCULATION_FAILED', { reason: 'pipeline_error', error: fatal.message });
     } finally {
       cleanup();
     }
@@ -219,14 +219,14 @@
       // Listen to all relevant change events
       const changeEvents = Array.from(TRIGGER_MAP.keys());
       changeEvents.forEach(event => {
-        EventBus.on(event, (payload) => {
+        bus?.on(event, (payload) => {
           scheduleRecalculation(event);
         });
       });
 
       // Full recalc on major state changes
-      bus.on('STATE_UPDATED', () => scheduleRecalculation('STATE_UPDATED'));
-      bus.on('STORAGE_WRITE_SUCCESS', () => scheduleRecalculation('STORAGE_WRITE_SUCCESS'));
+      bus?.on('STATE_UPDATED', () => scheduleRecalculation('STATE_UPDATED'));
+      bus?.on('STORAGE_WRITE_SUCCESS', () => scheduleRecalculation('STORAGE_WRITE_SUCCESS'));
 
       // Initial run after boot
       setTimeout(() => scheduleRecalculation('INIT'), 500);
@@ -287,4 +287,5 @@
 
 
 })();
+
 
