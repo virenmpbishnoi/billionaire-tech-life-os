@@ -228,18 +228,18 @@
       previousState = deepClone(currentState);
       currentState = deepClone(DEFAULT_STATE_STRUCTURE);
       isDirty = true;
-      eventbus?.emit('STATE_RESET', { timestamp: Date.now() });
+      bus?.emit('STATE_RESET', { timestamp: Date.now() });
       notifySubscribers({ type: 'reset' });
     },
 
     markDirty() {
       isDirty = true;
-      eventbus?.emit('STATE_DIRTY', { timestamp: Date.now() });
+      bus?.emit('STATE_DIRTY', { timestamp: Date.now() });
     },
 
     clearDirty() {
       isDirty = false;
-      eventbus?.emit('STATE_SYNCED', { timestamp: Date.now() });
+      bus?.emit('STATE_SYNCED', { timestamp: Date.now() });
     },
 
     isDirty() {
@@ -322,6 +322,7 @@
   }, 30000);
 
 })();
+
 
 
 
