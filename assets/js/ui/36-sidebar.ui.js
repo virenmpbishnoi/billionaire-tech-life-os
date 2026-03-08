@@ -92,18 +92,20 @@ if (!menuContainer) {
         </a>
       `;
 
-      li.addEventListener('click', (e) => {
-        e.preventDefault();
-        Router.navigate(item.route);
-        EventBus.emit('SIDEBAR_NAVIGATE', { route: item.route });
-      });
+      li.querySelector('.sidebar-link').addEventListener('click', (e) => {
+  e.preventDefault();
+  if (window.Router) {
+  Router.navigate(item.route);
+}
+  EventBus?.emit('SIDEBAR_NAVIGATE', { route: item.route });
+});
 
       menuContainer.appendChild(li);
     });
   }
 
   function updateActiveItem() {
-    const current = Router.getCurrentRoute();
+    const current = window.Router?.getCurrentRoute?.();
     if (!current?.path) return;
 
     const sidebar = getSidebar();
@@ -128,10 +130,10 @@ if (!menuContainer) {
     isCollapsed = !isCollapsed;
 
     if (isCollapsed) {
-      sidebar.classList.add('collapsed');
+      sidebar.classList.add('sidebar-collapsed');
       EventBus.emit('SIDEBAR_COLLAPSED');
     } else {
-      sidebar.classList.remove('collapsed');
+      sidebar.classList.remove('sidebar-collapsed');
       EventBus.emit('SIDEBAR_EXPANDED');
     }
 
@@ -222,7 +224,7 @@ if (!menuContainer) {
       const collapsed = State.getPath('ui.sidebarCollapsed');
       if (collapsed) {
         isCollapsed = true;
-        sidebar.classList.add('collapsed');
+        sidebar.classList.add('sidebar-collapsed');
       }
 
       // Initial active route highlight
@@ -285,4 +287,5 @@ if (!menuContainer) {
 
 
 })();
+
 
