@@ -181,7 +181,7 @@
     async init() {
       const stored = await readStoredVersionMetadata();
 
-      eventbus?.emit('VERSION_INITIALIZED', {
+      Eventbus?.emit('VERSION_INITIALIZED', {
         app: APP_VERSION,
         schema: SCHEMA_VERSION,
         stored
@@ -291,5 +291,6 @@
 
   // Debug helper (remove in production or gate behind flag)
   window.__debugVersionInfo = () => Versioning.getVersionInfo().then(console.log);
+
 
 })();
