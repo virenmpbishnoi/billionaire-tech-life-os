@@ -23,7 +23,10 @@
   // CONFIGURATION & CONSTANTS
   // ─────────────────────────────────────────────────────────────────────────────
 
-  const COMPONENT_BASE_PATH = '/components/';
+  const COMPONENT_BASE_PATH =
+  (window.location.pathname.includes('billionaire-tech-life-os')
+    ? '/billionaire-tech-life-os'
+    : '') + '/components/';
   const COMPONENT_EXTENSION = '.html';
 
   const COMPONENT_REGISTRY = {
@@ -57,11 +60,12 @@
   // ─────────────────────────────────────────────────────────────────────────────
 
   function getComponentPath(name) {
-    const config = COMPONENT_REGISTRY[name];
-    if (!config) throw new Error(`Unknown component: ${name}`);
+  const config = COMPONENT_REGISTRY[name];
+  if (!config) throw new Error(`Unknown component: ${name}`);
 
-    return `${COMPONENT_BASE_PATH}${config.path}${COMPONENT_EXTENSION}`;
-  }
+  const base = COMPONENT_BASE_PATH.replace(/\/+$/, '');
+  return `${base}/${config.path}${COMPONENT_EXTENSION}`;
+}
 
   function recordHistory(entry) {
     HISTORY.push(entry);
