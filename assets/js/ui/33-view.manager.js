@@ -19,14 +19,10 @@
 (function () {
   'use strict';
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // CONFIGURATION & CONSTANTS
-  // ─────────────────────────────────────────────────────────────────────────────
-
   const EXECUTION_PANEL_ID = 'execution-panel';
   const DEFAULT_VIEW = 'dashboard';
   const TRANSITION_CLASS = 'view-transition';
-  const TRANSITION_DURATION = 300; // ms – matches --bt-animation-medium
+  const TRANSITION_DURATION = 300;
 
 const VIEW_REGISTRY = {
   dashboard:  { id: 'dashboard', title: 'Dashboard', transition: 'fade-up' },
@@ -39,26 +35,17 @@ const VIEW_REGISTRY = {
   analytics:  { id: 'analytics', title: 'Analytics', transition: 'fade-up' },
   badges:     { id: 'badges', title: 'Badges', transition: 'scale-in' },
   settings:   { id: 'settings', title: 'Settings', transition: 'fade-in' },
-
   login: { id: 'login', title: 'Login', transition: 'fade-in' }
 };
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // INTERNAL STATE
-  // ─────────────────────────────────────────────────────────────────────────────
-
-  let activeView = null;              // { id, element, config }
+  let activeView = null;
   let previousView = null;
-  let viewHistory = [];               // array of { viewId, timestamp, from }
+  let viewHistory = [];
   let isTransitioning = false;
 
   function getPanel() {
-  return document.getElementById(EXECUTION_PANEL_ID);
-}
-
-  // ─────────────────────────────────────────────────────────────────────────────
-  // INTERNAL HELPERS
-  // ─────────────────────────────────────────────────────────────────────────────
+    return document.getElementById(EXECUTION_PANEL_ID);
+  }
 
   function getViewConfig(viewId) {
     return VIEW_REGISTRY[viewId] || null;
@@ -78,10 +65,9 @@ function clearPanel() {
 
     viewElement.classList.add(TRANSITION_CLASS, transitionType);
 
-    // Remove transition class after animation completes
     setTimeout(() => {
-  viewElement.classList.remove(TRANSITION_CLASS, transitionType);
-}, TRANSITION_DURATION + 50);
+      viewElement.classList.remove(TRANSITION_CLASS, transitionType);
+    }, TRANSITION_DURATION + 50);
   }
 
   function recordNavigation(viewId, from = null) {
@@ -102,27 +88,19 @@ function clearPanel() {
     });
   }
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // PUBLIC VIEW MANAGER API
-  // ─────────────────────────────────────────────────────────────────────────────
-
   const ViewManager = {
 
     init() {
-      // React to route changes from Router
+
       EventBus.on('ROUTE_CHANGED', ({ path, id }) => {
         const viewId = id || path.replace('/', '') || DEFAULT_VIEW;
         this.loadAndMountView(viewId);
       });
 
-      // Handle route not found / fallback
-
-      // Handle auth logout → redirect to login view
      EventBus.on('AUTH_LOGOUT_TRIGGERED', () => {
-  this.loadAndMountView('login');
-});
+       this.loadAndMountView('login');
+     });
 
-      // Initial view load (Router already set initial route)
       const initialRoute = Router.getCurrentRoute();
       if (initialRoute) {
         this.loadAndMountView(initialRoute.id || DEFAULT_VIEW);
@@ -131,8 +109,8 @@ function clearPanel() {
       console.log('[ViewManager] Initialized – managing view lifecycle & transitions');
     },
 
-    // ─── Load & mount a view by ID ────────────────────────────────────────────
     async loadAndMountView(viewId) {
+
       if (!viewId || !getViewConfig(viewId)) {
         console.warn('[ViewManager] Invalid view requested:', viewId);
         EventBus?.emit('VIEW_ERROR', { viewId, reason: 'not_found' });
@@ -149,39 +127,36 @@ function clearPanel() {
       emitViewEvent('VIEW_LOADING', { viewId });
 
       try {
-        // 1. Destroy current view if exists
+
         if (activeView) {
           this.destroyCurrentView();
         }
 
-        // 2. Request view template from ComponentLoader
-        const template = await ComponentLoader.loadViewTemplate(viewId);
+        /* ❗ FIXED LINE */
+        const template = await ComponentLoader.loadComponent(viewId);
 
         if (!template) {
           throw new Error(`Failed to load template for view: ${viewId}`);
         }
 
-        // 3. Create container & apply transition
         const viewContainer = document.createElement('div');
         viewContainer.id = `view-${viewId}`;
         viewContainer.className = 'view-container';
-        viewContainer.innerHTML = template;
+        viewContainer.appendChild(template);
 
-        // 4. Mount into execution panel
         clearPanel();
         const panel = getPanel();
-if (!panel) {
-  console.error('[ViewManager] Panel missing');
-  return;
-}
 
-panel.appendChild(viewContainer);
+        if (!panel) {
+          console.error('[ViewManager] Panel missing');
+          return;
+        }
 
-        // 5. Apply entrance transition
+        panel.appendChild(viewContainer);
+
         const config = getViewConfig(viewId);
         applyTransition(viewContainer, config?.transition || 'fade-in');
 
-        // 6. Update internal state
         previousView = activeView;
         activeView = {
           id: viewId,
@@ -191,27 +166,25 @@ panel.appendChild(viewContainer);
 
         recordNavigation(viewId, previousView?.id);
 
-        // 7. Emit success events
         emitViewEvent('VIEW_LOADED', { viewId });
         emitViewEvent('VIEW_RENDERED', { viewId });
 
-        // 8. Notify other systems (sidebar, header, etc.)
         EventBus?.emit('VIEW_ACTIVATED', { viewId, title: config?.title });
 
       } catch (err) {
+
         console.error('[ViewManager] View load failed:', viewId, err);
         EventBus?.emit('VIEW_ERROR', { viewId, error: err.message });
 
-        // Fallback to dashboard
         if (viewId !== DEFAULT_VIEW) {
           this.loadAndMountView(DEFAULT_VIEW);
         }
+
       } finally {
         isTransitioning = false;
       }
     },
 
-    // ─── Destroy current active view ──────────────────────────────────────────
  destroyCurrentView() {
   if (!activeView || !activeView.element) return;
 
@@ -230,17 +203,15 @@ panel.appendChild(viewContainer);
     activeView = null;
   }, TRANSITION_DURATION);
 },
-    // ─── Get current active view info ─────────────────────────────────────────
+
     getActiveView() {
       return activeView ? { ...activeView } : null;
     },
 
-    // ─── Get navigation history ───────────────────────────────────────────────
     getViewHistory() {
       return [...viewHistory];
     },
 
-    // ─── Force reload current view ────────────────────────────────────────────
     reloadCurrentView() {
       if (activeView?.id) {
         this.loadAndMountView(activeView.id);
@@ -248,13 +219,8 @@ panel.appendChild(viewContainer);
     }
   };
 
-  // ─────────────────────────────────────────────────────────────────────────────
-  // GLOBAL EXPOSURE & AUTO-INIT
-  // ─────────────────────────────────────────────────────────────────────────────
-
   window.ViewManager = ViewManager;
 
-  // Auto-init after Router
   function tryInit() {
     if (window.Router && window.State && window.EventBus) {
       ViewManager.init();
@@ -265,13 +231,11 @@ panel.appendChild(viewContainer);
 
   tryInit();
 
-  // Debug helpers
   window.__debugViews = {
     load: (viewId) => ViewManager.loadAndMountView(viewId),
     current: () => ViewManager.getActiveView(),
     history: () => ViewManager.getViewHistory(),
     reload: () => ViewManager.reloadCurrentView()
   };
-
 
 })();
