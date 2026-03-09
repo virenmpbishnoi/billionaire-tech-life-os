@@ -212,26 +212,24 @@ panel.appendChild(viewContainer);
     },
 
     // ─── Destroy current active view ──────────────────────────────────────────
-    destroyCurrentView() {
-      if (!activeView || !activeView.element) return;
+ destroyCurrentView() {
+  if (!activeView || !activeView.element) return;
 
-      const container = activeView.element;
-      const viewId = activeView.id;
+  const container = activeView.element;
+  const viewId = activeView.id;
 
-      // Apply exit transition (optional – can be CSS-based)
-      container.classList.add('view-exit');
+  container.classList.add('view-exit');
 
-// Wait for exit animation
-setTimeout(() => {
-  if (container.parentNode) {
-    container.parentNode.removeChild(container);
-  }
+  setTimeout(() => {
+    if (container.parentNode) {
+      container.parentNode.removeChild(container);
+    }
 
-  emitViewEvent('VIEW_DESTROYED', { viewId });
+    emitViewEvent('VIEW_DESTROYED', { viewId });
 
-  activeView = null;
-}, TRANSITION_DURATION);
-
+    activeView = null;
+  }, TRANSITION_DURATION);
+},
     // ─── Get current active view info ─────────────────────────────────────────
     getActiveView() {
       return activeView ? { ...activeView } : null;
