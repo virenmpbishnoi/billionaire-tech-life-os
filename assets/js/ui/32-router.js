@@ -208,9 +208,17 @@ function navigate(path, options = {}) {
     // Update browser history
     const state = { path };
     if (options.replace) {
-      window.history.replaceState(state, route?.title || '', path);
+      window.history.replaceState(
+  state,
+  route?.title || '',
+  '/billionaire-tech-life-os' + path
+);
     } else {
-      window.history.pushState(state, route?.title || '', path);
+      window.history.pushState(
+  state,
+  route?.title || '',
+  '/billionaire-tech-life-os' + path
+);
     }
 
     previousRoute = currentRoute;
@@ -235,84 +243,65 @@ function navigate(path, options = {}) {
   // PUBLIC ROUTER API
   // ─────────────────────────────────────────────────────────────────────────────
 
-  const Router = {
+const Router = {
 
-    init() {
+  init() {
 
-  let initialPath = window.location.pathname
-    .replace('/billionaire-tech-life-os', '') || '/';
+let initialPath = window.location.pathname
+  .replace('/billionaire-tech-life-os', '') || DEFAULT_ROUTE;
 
-  if (!ROUTES[initialPath]) {
-    initialPath = DEFAULT_ROUTE;
+    if (!ROUTES[initialPath]) {
+      initialPath = DEFAULT_ROUTE;
+    }
+
+    navigate(initialPath, { replace: true });
+
+    window.addEventListener('popstate', (event) => {
+
+      const path = (event.state?.path || window.location.pathname)
+        .replace('/billionaire-tech-life-os', '');
+
+      navigate(path, { replace: true });
+
+    });
+
+    EventBus.on('NAVIGATE_REQUEST', ({ path, replace }) => {
+      navigate(path, { replace });
+    });
+
+    EventBus.on('SIDEBAR_NAVIGATE', ({ route }) => {
+      navigate(route);
+    });
+
+    EventBus.on('AUTH_LOGOUT_TRIGGERED', () => {
+      if (ROUTES[currentRoute?.path]?.requiresAuth) {
+        navigate('/login', { replace: true });
+      }
+    });
+
+    console.log('[Router] Initialized – client-side navigation active');
+  },
+
+  navigate,
+
+  back() {
+    window.history.back();
+  },
+
+  getCurrentRoute() {
+    return currentRoute ? { ...currentRoute } : null;
+  },
+
+  getHistory() {
+    return [...navigationHistory];
   }
 
-  navigate(initialPath, { replace: true });
-
-  window.addEventListener('popstate', (event) => {
-
-    const path = (event.state?.path || window.location.pathname)
-      .replace('/billionaire-tech-life-os', '');
-
-    navigate(path, { replace: true });
-
-  });
-
-  EventBus.on('NAVIGATE_REQUEST', ({ path, replace }) => {
-    navigate(path, { replace });
-  });
-
-  EventBus.on('SIDEBAR_NAVIGATE', ({ route }) => {
-    navigate(route);
-  });
-
-}
-
-      // Protect logout / session invalidation
-      EventBus.on('AUTH_LOGOUT_TRIGGERED', () => {
-        if (ROUTES[currentRoute?.path]?.requiresAuth) {
-  navigate('/login', { replace: true });
-}
-      });
-
-      console.log('[Router] Initialized – client-side navigation active');
-    },
-
-    navigate,
-
-    replace(path) {
-      return navigate(path, { replace: true });
-    },
-
-    back() {
-      window.history.back();
-    },
-
-    forward() {
-      window.history.forward();
-    },
-
-    getCurrentRoute() {
-      return currentRoute ? { ...currentRoute } : null;
-    },
-
-    getPreviousRoute() {
-      return previousRoute ? { ...previousRoute } : null;
-    },
-
-    getHistory() {
-      return [...navigationHistory];
-    },
-
-    isProtectedRoute(path) {
-      return ROUTES[path]?.requiresAuth === true;
-    }
-  };
-
+};
   // ─────────────────────────────────────────────────────────────────────────────
   // GLOBAL EXPOSURE & AUTO-INIT
   // ─────────────────────────────────────────────────────────────────────────────
 
-  window.Router = Router;
+window.Router = Router;
 
   // Auto-init as early as possible (after State & EventBus)
   function tryInit() {
