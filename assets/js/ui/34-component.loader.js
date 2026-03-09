@@ -1,38 +1,23 @@
-/*
- * 34-component.loader.js
- * JS-Driven UI Loader – Billionaire Tech Adaptive Life OS
- *
- * This version disables HTML template loading.
- * UI is rendered directly by JS modules (DashboardUI, SidebarUI, etc).
- */
-
 (function () {
 'use strict';
 
 const ComponentLoader = {
 
-async init() {
+init() {
 
-  // Listen for view load requests from Router/ViewManager
-  EventBus.on('VIEW_LOAD_REQUEST', ({ viewId }) => {
+EventBus.on('VIEW_LOAD_REQUEST', ({ viewId }) => {
 
-    // Directly emit ready event (no HTML loading)
-    EventBus.emit('COMPONENT_READY_FOR_MOUNT', {
-      viewId
-    });
+EventBus.emit('COMPONENT_READY_FOR_MOUNT', { viewId });
 
-  });
+});
 
-  console.log('[ComponentLoader] JS rendering mode active – HTML templates disabled');
+console.log('[ComponentLoader] JS rendering mode active');
 
 },
 
-// Dummy method kept for compatibility
-async loadComponent(name) {
+async loadComponent() {
 
-  console.warn('[ComponentLoader] HTML loading disabled:', name);
-
-  return document.createDocumentFragment();
+return document.createDocumentFragment();
 
 }
 
@@ -40,17 +25,15 @@ async loadComponent(name) {
 
 window.ComponentLoader = ComponentLoader;
 
+function tryInit(){
 
-// Auto-init
-function tryInit() {
-
-if (window.ViewManager && window.State && window.EventBus) {
+if(window.ViewManager && window.EventBus){
 
 ComponentLoader.init();
 
-} else {
+}else{
 
-setTimeout(tryInit, 50);
+setTimeout(tryInit,50);
 
 }
 
