@@ -24,97 +24,118 @@
   // ROUTE DEFINITIONS
   // ─────────────────────────────────────────────────────────────────────────────
 
-  const ROUTES = {
-    '/dashboard': {
-      id: 'dashboard',
-      title: 'Dashboard',
-      view: 'dashboard',
-      requiresAuth: true,
-      icon: 'home',
-      showInSidebar: true
-    },
-    '/tasks': {
-      id: 'tasks',
-      title: 'Tasks',
-      view: 'tasks',
-      requiresAuth: true,
-      icon: 'check-square',
-      showInSidebar: true
-    },
-    '/habits': {
-      id: 'habits',
-      title: 'Habits',
-      view: 'habits',
-      requiresAuth: true,
-      icon: 'repeat',
-      showInSidebar: true
-    },
-    '/missions': {
-      id: 'missions',
-      title: 'Missions',
-      view: 'missions',
-      requiresAuth: true,
-      icon: 'target',
-      showInSidebar: true
-    },
-    '/health': {
-      id: 'health',
-      title: 'Health',
-      view: 'health',
-      requiresAuth: true,
-      icon: 'heart-pulse',
-      showInSidebar: true
-    },
-    '/finance': {
-      id: 'finance',
-      title: 'Finance',
-      view: 'finance',
-      requiresAuth: true,
-      icon: 'dollar-sign',
-      showInSidebar: true
-    },
-    '/targets': {
-      id: 'targets',
-      title: 'Targets',
-      view: 'targets',
-      requiresAuth: true,
-      icon: 'bullseye',
-      showInSidebar: true
-    },
-    '/analytics': {
-      id: 'analytics',
-      title: 'Analytics',
-      view: 'analytics',
-      requiresAuth: true,
-      icon: 'bar-chart-2',
-      showInSidebar: true
-    },
-    '/badges': {
-      id: 'badges',
-      title: 'Achievements',
-      view: 'badges',
-      requiresAuth: true,
-      icon: 'award',
-      showInSidebar: true
-    },
-    '/settings': {
-      id: 'settings',
-      title: 'Settings',
-      view: 'settings',
-      requiresAuth: true,
-      icon: 'settings',
-      showInSidebar: true
-    },
-    '/login': {
-      id: 'login',
-      title: 'Login',
-      view: 'login',
-      requiresAuth: false,
-      public: true
-    }
-  };
+// ─────────────────────────────────────────────────────────
+// ROUTE DEFINITIONS
+// ─────────────────────────────────────────────────────────
 
-  const DEFAULT_ROUTE = '/dashboard';
+const ROUTES = {
+
+  '/': {
+    id: 'dashboard',
+    title: 'Dashboard',
+    view: 'dashboard',
+    requiresAuth: true,
+    icon: 'home',
+    showInSidebar: true
+  },
+
+  '/tasks': {
+    id: 'tasks',
+    title: 'Tasks',
+    view: 'tasks',
+    requiresAuth: true,
+    icon: 'check-square',
+    showInSidebar: true
+  },
+
+  '/habits': {
+    id: 'habits',
+    title: 'Habits',
+    view: 'habits',
+    requiresAuth: true,
+    icon: 'repeat',
+    showInSidebar: true
+  },
+
+  '/missions': {
+    id: 'missions',
+    title: 'Missions',
+    view: 'missions',
+    requiresAuth: true,
+    icon: 'target',
+    showInSidebar: true
+  },
+
+  '/health': {
+    id: 'health',
+    title: 'Health',
+    view: 'health',
+    requiresAuth: true,
+    icon: 'heart-pulse',
+    showInSidebar: true
+  },
+
+  '/finance': {
+    id: 'finance',
+    title: 'Finance',
+    view: 'finance',
+    requiresAuth: true,
+    icon: 'dollar-sign',
+    showInSidebar: true
+  },
+
+  '/goals': {
+    id: 'goals',
+    title: 'Goals',
+    view: 'goals',
+    requiresAuth: true,
+    icon: 'bullseye',
+    showInSidebar: true
+  },
+
+  '/analytics': {
+    id: 'analytics',
+    title: 'Analytics',
+    view: 'analytics',
+    requiresAuth: true,
+    icon: 'bar-chart-2',
+    showInSidebar: true
+  },
+
+  '/badges': {
+    id: 'badges',
+    title: 'Badges',
+    view: 'badges',
+    requiresAuth: true,
+    icon: 'award',
+    showInSidebar: true
+  },
+
+  '/settings': {
+    id: 'settings',
+    title: 'Settings',
+    view: 'settings',
+    requiresAuth: true,
+    icon: 'settings',
+    showInSidebar: true
+  },
+
+  '/login': {
+    id: 'login',
+    title: 'Login',
+    view: 'login',
+    requiresAuth: false,
+    public: true
+  }
+
+};
+
+
+// ─────────────────────────────────────────────────────────
+// DEFAULT ROUTE
+// ─────────────────────────────────────────────────────────
+
+const DEFAULT_ROUTE = '/';
 
   // ─────────────────────────────────────────────────────────────────────────────
   // INTERNAL STATE
