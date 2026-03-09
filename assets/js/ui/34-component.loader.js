@@ -23,10 +23,10 @@
   // CONFIGURATION & CONSTANTS
   // ─────────────────────────────────────────────────────────────────────────────
 
-  const COMPONENT_BASE_PATH =
-  (window.location.pathname.includes('billionaire-tech-life-os')
-    ? '/billionaire-tech-life-os'
-    : '') + '/components/';
+const COMPONENT_BASE_PATH =
+(window.location.pathname.includes('billionaire-tech-life-os')
+ ? '/billionaire-tech-life-os'
+ : '') + '/';
   const COMPONENT_EXTENSION = '.html';
 
   const COMPONENT_REGISTRY = {
@@ -43,7 +43,7 @@
     missions:   { path: 'missions',   cache: true },
     health:     { path: 'health',     cache: true },
     finance:    { path: 'finance',    cache: true },
-    targets:    { path: 'targets',    cache: true },
+    targets: { path: 'goals', cache: true },
     analytics:  { path: 'analytics',  cache: true },
     badges:     { path: 'badges',     cache: true },
     settings:   { path: 'settings',   cache: true }
