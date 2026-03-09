@@ -238,27 +238,34 @@ function navigate(path, options = {}) {
   const Router = {
 
     init() {
-      // Initial route from URL
-      let initialPath = window.location.pathname || '/';
-      if (!ROUTES[initialPath]) {
-      initialPath = DEFAULT_ROUTE;
+
+  let initialPath = window.location.pathname
+    .replace('/billionaire-tech-life-os', '') || '/';
+
+  if (!ROUTES[initialPath]) {
+    initialPath = DEFAULT_ROUTE;
+  }
+
+  navigate(initialPath, { replace: true });
+
+  window.addEventListener('popstate', (event) => {
+
+    const path = (event.state?.path || window.location.pathname)
+      .replace('/billionaire-tech-life-os', '');
+
+    navigate(path, { replace: true });
+
+  });
+
+  EventBus.on('NAVIGATE_REQUEST', ({ path, replace }) => {
+    navigate(path, { replace });
+  });
+
+  EventBus.on('SIDEBAR_NAVIGATE', ({ route }) => {
+    navigate(route);
+  });
+
 }
-      navigate(initialPath, { replace: true });
-
-      // Handle browser back/forward
-      window.addEventListener('popstate', (event) => {
-        const path = event.state?.path || window.location.pathname;
-        navigate(path, { replace: true });
-      });
-
-      // Listen for programmatic navigation requests
-      EventBus.on('NAVIGATE_REQUEST', ({ path, replace }) => {
-        navigate(path, { replace });
-      });
-EventBus.on('SIDEBAR_NAVIGATE', ({ route }) => {
-  navigate(route);
-});
-      // Handle 404 / invalid routes
 
       // Protect logout / session invalidation
       EventBus.on('AUTH_LOGOUT_TRIGGERED', () => {
@@ -328,4 +335,5 @@ EventBus.on('SIDEBAR_NAVIGATE', ({ route }) => {
 
 
 })();
+
 
