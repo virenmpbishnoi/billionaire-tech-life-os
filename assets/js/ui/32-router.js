@@ -145,59 +145,59 @@
 
   // ─────────────────────────────────────────────────────────────────────────────
   // NAVIGATION CORE
-  // ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 
-  function navigate(path, options = {}) {
-    if (navigationInProgress) return false;
+function navigate(path, options = {}) {
+  if (navigationInProgress) return false;
 
-    path = path.startsWith('/') ? path : '/' + path;
-    if (path === currentRoute?.path) return true; // already here
+  path = path.startsWith('/') ? path : '/' + path;
 
-    navigationInProgress = true;
+  if (path === currentRoute?.path) return true;
 
-    const route = ROUTES[path];
+  navigationInProgress = true;
 
-if (!route) {
-  EventBus?.emit('ROUTE_NOT_FOUND', { path });
-  navigationInProgress = false;
+  // check route existence first
+  const route = ROUTES[path];
 
-  if (path !== DEFAULT_ROUTE) {
-    navigate(DEFAULT_ROUTE, { replace: true });
-  }
+  if (!route) {
+    EventBus?.emit('ROUTE_NOT_FOUND', { path });
 
-  return false;
-}
+    navigationInProgress = false;
 
-const guardResult = runNavigationGuards(path);
-if (!guardResult.allowed) {
-      if (guardResult.redirect) {
-        navigate(guardResult.redirect, { replace: true });
-      }
-      navigationInProgress = false;
-      EventBus?.emit('ROUTE_NAVIGATION_FAILED', { path, reason: guardResult.reason });
-      return false;
+    if (path !== DEFAULT_ROUTE) {
+      navigate(DEFAULT_ROUTE, { replace: true });
     }
 
- const route = ROUTES[path];
-
-if (!route) {
-  EventBus?.emit('ROUTE_NOT_FOUND', { path });
-
-  navigationInProgress = false;
-
-  if (path !== DEFAULT_ROUTE) {
-    navigate(DEFAULT_ROUTE, { replace: true });
+    return false;
   }
 
-  return false;
-}
-    const routeData = {
+  // run guards
+  const guardResult = runNavigationGuards(path);
+
+  if (!guardResult.allowed) {
+
+    if (guardResult.redirect) {
+      navigate(guardResult.redirect, { replace: true });
+    }
+
+    navigationInProgress = false;
+
+    EventBus?.emit('ROUTE_NAVIGATION_FAILED', {
       path,
-      id: route?.id || 'unknown',
-      title: route?.title || 'Unknown',
-      timestamp: Date.now(),
-      from: currentRoute?.path
-    };
+      reason: guardResult.reason
+    });
+
+    return false;
+  }
+
+  // build route data
+  const routeData = {
+    path,
+    id: route.id || 'unknown',
+    title: route.title || 'Unknown',
+    timestamp: Date.now(),
+    from: currentRoute?.path
+  };
 
     // Update history
     if (!options.replace) {
@@ -259,9 +259,6 @@ EventBus.on('SIDEBAR_NAVIGATE', ({ route }) => {
   navigate(route);
 });
       // Handle 404 / invalid routes
-      EventBus.on('ROUTE_NOT_FOUND', () => {
-        navigate(DEFAULT_ROUTE, { replace: true });
-      });
 
       // Protect logout / session invalidation
       EventBus.on('AUTH_LOGOUT_TRIGGERED', () => {
@@ -331,3 +328,4 @@ EventBus.on('SIDEBAR_NAVIGATE', ({ route }) => {
 
 
 })();
+
